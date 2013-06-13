@@ -1,7 +1,7 @@
 '
 ' Format Xojo code in the currently opened method
 '
-' Version: 0.1
+' Version: 0.1.1
 ' Author: Jeremy Cowgar <jeremy@cowgar.com>
 ' Contributors: 
 ' 
@@ -65,9 +65,17 @@ End Sub
 Dim tokens() As Token
 Dim currentPosition As Integer = 0
 Dim tokenStartPosition As Integer = 0
-Dim code As String = Text
-Dim codeLength As Integer = code.Len
+Dim code As String
+Dim codeLength As Integer
 Dim inString As Boolean = False
+
+If SelLength > 0 Then
+code = SelText
+Else
+code = Text
+End If
+
+codeLength = code.Len
 
 While currentPosition <= codeLength
 Dim ch As String = code.Mid(currentPosition, 1)
@@ -176,4 +184,10 @@ If DoDebug Then
 result = result + EndOfLine + EndOfLine + verbose
 End If
 
-Text = Trim(result)
+result = Trim(result)
+
+If SelLength > 0 Then
+SelText = result
+Else
+Text = result
+End If

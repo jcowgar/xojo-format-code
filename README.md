@@ -22,14 +22,14 @@ Todo
 * Much testing.
 * Cleaning the code up, making it easier to understand and maintain.
 * Track current column and wrap long lines where able to
-* If `SelLen > 0 Then` work on `SelText`, not `Text`
+* *completed* - <s>If `SelLen > 0 Then` work on `SelText`, not `Text`</s>
 * Split `.` as its own token amoungst words, and capitalize them as 
   needed.
 * Better detection of positive/negative numbers vs. plus/minus
 * Detect comments and format better, for example:
-    If 1 Then'blah 
+    `If 1 Then'blah`
 should be translated to
-    If 1 Then ' blah
+    `If 1 Then ' blah`
 * Don't rely on source code's `EndOfLine`, skip that as a token and insert
   our own `EndOfLine`'s.
 
