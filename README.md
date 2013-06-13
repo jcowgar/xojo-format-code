@@ -1,10 +1,27 @@
 Format Code - Xojo IDE Script
 =============================
 
+Format's the code in the current editor of the [Xojo IDE](http://www.xojo.com).
+For example, badly formatted code:
+
+    DIM i as Integer= 10
+    iF i<18    then
+      SayHello  ("Howdy"  , "World"  )
+    end if
+    
+Automagically becomes:
+
+    Dim i As Integer = 10
+    If i < 18 Then
+      SayHello("Howdy", "World")
+    End If    
+
 Todo
 ----
 
-* Track current column better and wrap long lines where able to
+* Much testing.
+* Cleaning the code up, making it easier to understand and maintain.
+* Track current column and wrap long lines where able to
 * If `SelLen > 0 Then` work on `SelText`, not `Text`
 * Split `.` as its own token amoungst words, and capitalize them as 
   needed.
