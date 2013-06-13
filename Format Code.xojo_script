@@ -162,7 +162,8 @@ If tok.value = "<" And nextTok <> Nil And nextTok.value = ">" Then
 ' Don't add any additional spacing
 
 ElseIf tok.value <> "(" Then
-If nextTok <> Nil And nextTok.value <> "(" And nextTok.value <> ")" And nextTok.value <> "," And columnPosition > 0 Then
+If nextTok <> Nil And nextTok.value <> "(" And nextTok.value <> ")" _
+And nextTok.value <> "," And nextTok.value <> EndOfLine And columnPosition > 0 Then
 result = result + " "
 columnPosition = columnPosition + 1
 End If
