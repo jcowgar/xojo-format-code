@@ -19,10 +19,7 @@ Automagically becomes:
 Todo
 ----
 
-* Much testing.
-* Cleaning the code up, making it easier to understand and maintain.
 * Track current column and wrap long lines where able to
-* *completed* - <s>If `SelLen > 0 Then` work on `SelText`, not `Text`</s>
 * Split `.` as its own token amoungst words, and capitalize them as 
   needed.
 * Better detection of positive/negative numbers vs. plus/minus
