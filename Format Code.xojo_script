@@ -1,7 +1,7 @@
 '
 ' Format Xojo code in the currently opened method
 '
-' Version: 0.2.0
+' Version: 0.2.1
 ' Author: Jeremy Cowgar <jeremy@cowgar.com>
 ' Contributors: 
 ' 
@@ -199,10 +199,20 @@ MaybeAddToken
 AddToken(ch)
 End If
 
-Case "(", ")", ",", "_", "/", "*", "^", ":", "=", EndOfLine
+Case "(", ")", ",", "/", "*", "^", ":", "=", EndOfLine
 MaybeAddToken
 
 AddToken(ch)
+
+Case "_"
+' Only process the _ character as an individual token if it is the start of a token
+' and it is followed by a space, EndOfLine or comment character
+If mCurrentPosition = mTokenStartPosition And _
+(nextCh = EndOfLine Or nextCh = " " Or nextCh = "'") Then
+MaybeAddToken
+
+AddToken(ch)
+End If
 
 Case "<", ">" 
 MaybeAddToken
