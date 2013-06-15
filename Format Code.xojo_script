@@ -207,7 +207,7 @@ MaybeAddToken
 AddToken(ch)
 End If
 
-Case "(", ")", ",", "/", "*", "^", ":", "=", EndOfLine
+Case "(", ")", ",", "*", "^", ":", "=", EndOfLine
 MaybeAddToken
 
 AddToken(ch)
@@ -220,6 +220,20 @@ If mCurrentPosition = mTokenStartPosition And _
 MaybeAddToken
 
 AddToken(ch)
+End If
+
+Case "/"
+MaybeAddToken
+
+' We could have // which indicates a comment and should be a single token, not
+' two forward slash tokens.
+If nextCh = "/" Then
+mCurrentPosition = mCurrentPosition + 1
+
+AddToken("//")
+
+Else
+AddToken("/")
 End If
 
 Case "<", ">" 
