@@ -323,12 +323,24 @@ If mColumn > 0 Then
 If nextTok <> Nil Then
 If tok.Type = Token.Special And nextTok.Value = "(" Then
 AddSpace
+
+ElseIf nextTok.Type = Token.Newline Then
+' Do nothing
+
+ElseIf nextTok.Value = "," Then
+' Do nothing
+
 ElseIf nextTok.Value = "(" Then
 ' Do nothing
+
 ElseIf nextTok.Value = ")" Then
 ' Do nothing
+
 ElseIf tok.Value <> "(" Then
 AddSpace
+
+Else
+' Do nothing
 End If
 End If
 End If
