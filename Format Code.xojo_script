@@ -347,6 +347,9 @@ If nextTok <> Nil Then
 If tok.Type = Token.Comment Then
 AddEndOfLine
 
+ElseIf tok.Value = ")" And nextTok.Value.Left(1) = "." Then
+' Do nothing
+
 ElseIf tok.Type = Token.Special And nextTok.Value = "(" Then
 AddSpace
 
