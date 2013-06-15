@@ -32,7 +32,11 @@ KeywordsToCapitalize = Array("AddHandler", "AddressOf", "Array", "As", "Assigns"
 "TargetMacOS", "TargetMachO", "TargetWeb", "TargetWin32", "TargetX86", _
 "BackgroundTasks", "BoundsChecking", "BreakOnExceptions", "DisableAutoWaitCursor", _
 "DisableBackgroundTasks", "DisableBoundsChecking", "Error", "NilObjectChecking", _
-"StackOverflowChecking", "Unused", "Warning", "X86CallingConvention")
+"StackOverflowChecking", "Unused", "Warning", "X86CallingConvention", "Boolean", _
+"CFStringRef", "CString", "Currency", "Delegate", "Double", "Int16", "Int32", "Int64", _
+"Int8", "Integer", "OSType", "PString", "Ptr", "Short", "Single", "String", _
+"Structure", "UInt16", "UInt32", "UInt64", "UInt8", "UShort", "WindowPtr", _
+"WString", "XMLNodeType")
 
 '
 ' Code Formatting Code
