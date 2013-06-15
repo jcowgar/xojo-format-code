@@ -63,11 +63,14 @@ chCode = Asc(value.Mid(i, 1))
 
 If i = 1 And (chCode = 43 Or chCode = 45) Then
 ' Good
+
 ElseIf chCode >= 48 And chCode <= 57 Then
 ' Good
+
 ElseIf chCode = 46 And hasDecimal = False Then
 ' Good
 hasDecimal = True
+
 Else
 Return False
 End If
@@ -179,6 +182,7 @@ If ch = """" Then
 If mCurrentPosition < CodeLength And Code.Mid(mCurrentPosition + 1, 1) = """" Then
 ' Increment past the next quote, it is a double quote
 mCurrentPosition = mCurrentPosition + 1
+
 Else
 mInString = False
 
@@ -283,6 +287,7 @@ For i = 0 To Tokens.UBound
 tok = Tokens(i)
 If i < Tokens.UBound Then
 nextTok = Tokens(i + 1)
+
 Else
 nextTok = Nil
 End If
@@ -333,6 +338,7 @@ Dim code As String
 
 If SelLength > 0 Then
 code = SelText
+
 Else
 code = Text
 End If
@@ -353,6 +359,7 @@ End If
 
 If SelLength > 0 Then
 SelText = result
+
 Else
 Text = result
 End If
