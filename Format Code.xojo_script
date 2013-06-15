@@ -83,6 +83,10 @@ Function IsAString(value As String) As Boolean
 Return (value.Left(1) = """" And value.Right(1) = """")
 End Function
 
+Function IsAComment(value As String) As Boolean
+Return (value.Left(1) = "'" Or value.Left(2) = "//")
+End Function
+
 '
 ' Represent a single token
 '
@@ -93,6 +97,7 @@ Const Number = 3
 Const Special = 4
 Const NewLine = 5
 Const StringLiteral = 6
+Const Comment = 7
 
 Dim Value As String
 Dim Type As Integer
@@ -115,6 +120,9 @@ Type = Special
 
 ElseIf IsANumber(Value) Then
 Type = Number
+
+ElseIf IsAComment(Value) Then
+Type = Comment
 
 ElseIf IsAString(Value) Then
 Type = StringLiteral
@@ -158,6 +166,17 @@ Sub AddToken(value As String)
 Tokens.Append(New Token(value))
 
 mTokenStartPosition = mCurrentPosition + 1
+End Sub
+
+Sub AddCommentToken()
+Dim eol As Integer = InStr(mCurrentPosition, Code, EndOfLine)
+If eol = 0 Then
+eol = CodeLength
+End If
+
+mCurrentPosition = eol
+
+MaybeAddToken
 End Sub
 
 Function Tokenize(sourceCode As String) As Boolean
@@ -222,17 +241,21 @@ MaybeAddToken
 AddToken(ch)
 End If
 
+Case "'"
+MaybeAddToken
+
+AddCommentToken
+
 Case "/"
 MaybeAddToken
 
 ' We could have // which indicates a comment and should be a single token, not
 ' two forward slash tokens.
 If nextCh = "/" Then
-mCurrentPosition = mCurrentPosition + 1
-
-AddToken("//")
+AddCommentToken
 
 Else
+' Must have been division
 AddToken("/")
 End If
 
@@ -321,7 +344,10 @@ End Select
 ' Add a space between tokens, if necessary
 If mColumn > 0 Then
 If nextTok <> Nil Then
-If tok.Type = Token.Special And nextTok.Value = "(" Then
+If tok.Type = Token.Comment Then
+AddEndOfLine
+
+ElseIf tok.Type = Token.Special And nextTok.Value = "(" Then
 AddSpace
 
 ElseIf nextTok.Type = Token.Newline Then
