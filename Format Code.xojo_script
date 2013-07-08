@@ -360,7 +360,11 @@ ElseIf nextTok.Value = "," Then
 ' Do nothing
 
 ElseIf nextTok.Value = "(" Then
+If lastTok <> Nil And tok.Type = Token.Keyword Then
+AddSpace
+Else
 ' Do nothing
+End If
 
 ElseIf nextTok.Value = ")" Then
 ' Do nothing
