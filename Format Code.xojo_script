@@ -171,7 +171,7 @@ End Sub
 Sub AddCommentToken()
 Dim eol As Integer = InStr(mCurrentPosition, Code, EndOfLine)
 If eol = 0 Then
-eol = CodeLength
+eol = CodeLength + 1
 End If
 
 mCurrentPosition = eol
