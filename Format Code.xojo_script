@@ -22,10 +22,10 @@ DoDebug = False
 KeywordsToCapitalize = Array("AddHandler", "AddressOf", "Array", "As", "Assigns", _
 "Break", "ByRef", "ByVal", "CType", "Call", "Case", "Catch", "Const", "Continue", _
 "Declare", "Dim", "Do", "Loop", "DownTo", "Each", "Else", "End", "Enum", "Exception", _
-"Exit", "Extends", "False", "Finally", "For", "Next", "Function", "GOTO", "GetTypeInfo", _
-"If", "Then", "In", "Is", "IsA", "Lib", "Loop", "Next", "Nil", "Optional", "ParamArray", _
-"Raise", "RaiseEvent", "Redim", "Rem", "RemoveHandler", "Return", "Select", "Case", "Soft", _
-"Static", "Step", "Structure", "Sub", "Super", "Then", "To", "True", "Try", "Until", _
+"Exit", "Extends", "False", "Finally", "For", "Not", "Next", "Function", "GOTO", "GetTypeInfo", _
+"If", "Then", "In", "Is", "IsA", "Lib", "Loop", "Nil", "Optional", "ParamArray", _
+"Raise", "RaiseEvent", "Redim", "Rem", "RemoveHandler", "Return", "Select", "Case", _
+"Soft", "Static", "Step", "Structure", "Sub", "Super", "Then", "To", "True", "Try", "Until", _
 "Wend", "While", "#If", "#ElseIf", "#EndIf", "#Pragma", "DebugBuild", "RBVersion", _
 "RBVersionString", "Target32Bit", "Target64Bit", "TargetBigEndian", "TargetCarbon", _
 "TargetCocoa", "TargetHasGUI", "TargetLinux", "TargetLittleEndian", _
