@@ -184,8 +184,8 @@ Code = sourceCode
 CodeLength = sourceCode.Len
 
 Redim Tokens(-1)
-mCurrentPosition = 0
-mTokenStartPosition = 0
+mCurrentPosition = 1
+mTokenStartPosition = 1
 mInString = False
 
 While mCurrentPosition <= CodeLength
