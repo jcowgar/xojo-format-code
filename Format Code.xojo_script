@@ -118,6 +118,8 @@ Const Comment = 7
 
 Dim Value As String
 Dim Type As Integer
+Dim StartIndex As Integer
+Dim Length As Integer
 
 Sub Constructor(v As String)
 Dim capitalizeIndex As Integer = KeywordsToCapitalize.IndexOf(v)
@@ -190,11 +192,18 @@ End If
 Dim tok As Token = New Token(Trim(Code.Mid(mTokenStartPosition, _
 mCurrentPosition - mTokenStartPosition)))
 
+tok.StartIndex = mTokenStartPosition
+tok.Length = mCurrentPosition - mTokenStartPosition
+
 If tok.value.len > 0 Then
 Tokens.Append(tok)
 End If
 
-mTokenStartPosition = mCurrentPosition + 1
+mTokenStartPosition = mCurrentPosition
+
+If incrementPosition Then
+mTokenStartPosition = mTokenStartPosition + 1
+End If
 End Sub
 
 Sub AddToken(value As String)
@@ -393,7 +402,8 @@ nextTok = Nil
 End If
 
 If DoDebug Then
-DebugString = DebugString + "' Token: '" + tok.Value + "', Type: " + Str(tok.Type) + EndOfLine
+DebugString = DebugString + "' Token: '" + tok.Value + "', Type: " + Str(tok.Type) + ", " + _
+"Start: " + Str(tok.StartIndex) + ", Length: " + Str(tok.Length) + EndOfLine
 End If
 
 Select Case tok.Value
