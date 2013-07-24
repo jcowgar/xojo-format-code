@@ -258,7 +258,35 @@ MaybeAddToken
 AddToken(ch)
 End If
 
-Case "(", ")", ",", "*", "^", ":", "=", EndOfLine
+Case "="
+' Look at the previous tokens, if it was a +, -, * or /, do magic
+' to come up with the expanded version
+Dim addToken As Boolean = True
+
+If Tokens.UBound > 1 Then
+Dim oneTokenBack As Token = Tokens(Tokens.UBound)
+Dim twoTokensBack As Token = Tokens(Tokens.UBound - 1)
+Dim expansionOps As String = "+-*/"
+
+If expansionOps.InStr(oneTokenBack.Value) > 0 Then
+addToken = False
+
+' Delete the previous expansionOp
+Tokens.Remove(Tokens.UBound)
+
+AddToken("=")
+AddToken(twoTokensBack.Value)
+AddToken(oneTokenBack.Value)
+End If
+End If
+
+If addToken Then
+MaybeAddToken
+
+AddToken(ch)
+End If
+
+Case "(", ")", ",", "*", "^", ":", EndOfLine
 MaybeAddToken
 
 AddToken(ch)
