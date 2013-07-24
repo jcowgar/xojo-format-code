@@ -411,11 +411,7 @@ ElseIf tok.Value = ")" And nextTok.Value.Left(1) = "." Then
 ' Do nothing
 
 ElseIf tok.Type = Token.Special And nextTok.Value = "(" Then
-If nextTok.Value = "(" Then
-' Do nothing
-Else
 AddSpace
-End If
 
 ElseIf nextTok.Type = Token.Newline Then
 ' Do nothing
