@@ -184,7 +184,7 @@ Private mCurrentPosition As Integer
 Private mTokenStartPosition As Integer
 Private mInString As Boolean
 
-Sub MaybeAddToken()
+Sub MaybeAddToken(incrementPosition As Boolean = True)
 If mCurrentPosition <= mTokenStartPosition Then
 Return
 End If
@@ -314,20 +314,19 @@ AddToken(ch)
 End If
 
 Case "'"
-MaybeAddToken
-
+MaybeAddToken(False)
 AddCommentToken
 
 Case "/"
-MaybeAddToken
-
 ' We could have // which indicates a comment and should be a single token, not
 ' two forward slash tokens.
 If nextCh = "/" Then
+MaybeAddToken(False)
 AddCommentToken
 
 Else
 ' Must have been division
+MaybeAddToken
 AddToken("/")
 End If
 
