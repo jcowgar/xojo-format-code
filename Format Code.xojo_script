@@ -263,7 +263,7 @@ Case "="
 ' to come up with the expanded version
 Dim addToken As Boolean = True
 
-If Tokens.UBound > 1 Then
+If Tokens.UBound >= 1 Then
 Dim oneTokenBack As Token = Tokens(Tokens.UBound)
 Dim twoTokensBack As Token = Tokens(Tokens.UBound - 1)
 Dim expansionOps As String = "+-*/"
