@@ -19,6 +19,9 @@ Const kUpperCase = 3
 ' Convert badly formatted "byREF" into ByRef (kTitleCase), byref (kLowerCase) or BYREF (kUpperCase)
 Dim CaseConversion As Integer = kTitleCase
 
+' Pad parens with a space?
+Dim PadParens As Boolean = False
+
 ' Appends debug information to the end of the editor. This should be
 ' set to true only for those working on Code Formatter.
 Dim DoDebug As Boolean = False
@@ -429,7 +432,11 @@ End If
 ElseIf nextTok.Value = ")" Then
 ' Do nothing
 
-ElseIf tok.Value <> "(" Then
+If PadParens Then
+AddSpace
+End If
+
+ElseIf tok.Value <> "(" Or PadParens Then
 AddSpace
 
 Else
