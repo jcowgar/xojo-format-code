@@ -6,16 +6,24 @@
 ' Contributors: 
 ' 
 
+Const kTitleCase = 1
+Const kLowerCase = 2
+Const kUpperCase = 3
+
+'
 '
 ' User Preferences:
 '
+'
 
-Dim DoDebug As Boolean
-Dim KeywordsToCapitalize() As String
+' Convert badly formatted "byREF" into ByRef (kTitleCase), byref (kLowerCase) or BYREF (kUpperCase)
+Dim CaseConversion As Integer = kTitleCase
 
 ' Appends debug information to the end of the editor. This should be
 ' set to true only for those working on Code Formatter.
-DoDebug = False
+Dim DoDebug As Boolean = False
+
+Dim KeywordsToCapitalize() As String
 
 ' Keywords that you want Code Formatter to correct the case on. By default, all
 ' keywords and pragmas are listed
@@ -37,6 +45,12 @@ KeywordsToCapitalize = Array("AddHandler", "AddressOf", "Array", "As", "Assigns"
 "Int8", "Integer", "OSType", "PString", "Ptr", "Short", "Single", "String", _
 "Structure", "UInt16", "UInt32", "UInt64", "UInt8", "UShort", "WindowPtr", _
 "WString", "XMLNodeType")
+
+'
+' 
+' END OF USER PREFERENCES
+'
+'
 
 '
 ' Code Formatting Code
@@ -106,7 +120,17 @@ Sub Constructor(v As String)
 Dim capitalizeIndex As Integer = KeywordsToCapitalize.IndexOf(v)
 
 If capitalizeIndex > -1 Then
+Select Case CaseConversion
+Case 1 ' TitleCase
 Value = KeywordsToCapitalize(capitalizeIndex)
+
+Case 2 ' lower case
+Value = Lowercase(v)
+
+Case 3 ' UPPER CASE
+Value = Uppercase(v)
+End Select
+
 Type = Keyword
 
 Else
