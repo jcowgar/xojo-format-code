@@ -16,47 +16,17 @@ Automagically becomes:
       SayHello("Howdy", "World")
     End If    
 
-Todo
-----
+It also does some other semi-format tasks, for example it expands common short-hand
+assignments:
 
-* Track current column and wrap long lines where able to
-* Split `.` as its own token amoungst words, and capitalize them as 
-  needed.
-* Better detection of positive/negative numbers vs. plus/minus
-* Don't rely on source code's `EndOfLine`, skip that as a token and insert
-  our own `EndOfLine`'s.
+    appleCount += applesInDeliveryTruck
+    appleCount -= applesAteWhileUnloading
+    appleCount *= bushelsInTruck
+    appleCount /= peopleHelpingToUnload
 
-Additional Formatting
----------------------
+Automagically becomes:
 
-With an option, blank lines should be added for clarity, for example:
-
-    Dim i As Integer
-    Dim b As String
-    DoCode
- 
-Should become
- 
-    Dim i As Integer
-    Dim b As String
-
-    DoCode
-
-A `Select Case` statement example:
-
-    Select Case Name
-    Case "John"
-      DoSomething
-    Case "Jeff"
-      DoSomethingElse
-    End Select
- 
-Should become
-
-    Select Case Name
-    Case "John"
-      DoSomething
-
-    Case "Jeff"
-      DoSomethingElse
-    End Select
+    appleCount = appleCount + applesInDeliveryTruck
+    appleCount = appleCount - applesAteWhileUnloading
+    appleCount = appleCount * bushelsInTruck
+    appleCount = appleCount / peopleHelpingToUnload
