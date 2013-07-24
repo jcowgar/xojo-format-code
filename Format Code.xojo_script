@@ -428,12 +428,20 @@ If DoDebug Then
 result = result + EndOfLine + EndOfLine + writer.DebugString
 End If
 
+' Save the cursor position (simple, doesn't always restore the position contextually)
+' as formatting could have changed enough to make your old cursor position no longer
+' the same as the new with the same index.
+Dim cursorPosition As Integer = SelStart
+
 If SelLength > 0 Then
 SelText = result
 
 Else
 Text = result
 End If
+
+' Restore the cursor position
+SelStart = cursorPosition
 End Sub
 
 Main()
