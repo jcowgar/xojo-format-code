@@ -252,7 +252,7 @@ mInString = True
 Case " "
 MaybeAddToken
 
-Case "+", "-"
+Case "-"
 ' Could be a plus symbol or a negative number. This detection logic isn't the best...
 If Asc(nextCh) < 48 Or Asc(nextCh) > 57 Then
 ' Next character is not a number, add this token as a math operation of its own
@@ -289,7 +289,7 @@ MaybeAddToken
 AddToken(ch)
 End If
 
-Case "(", ")", ",", "*", "^", ":", EndOfLine
+Case "(", ")", ",", "+", "*", "^", ":", EndOfLine
 MaybeAddToken
 
 AddToken(ch)

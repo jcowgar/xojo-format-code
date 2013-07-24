@@ -47,6 +47,11 @@ tests.Append New TestCase("apples -= 10", "apples = apples - 10")
 tests.Append New TestCase("apples *= 10", "apples = apples * 10")
 tests.Append New TestCase("apples /= 10", "apples = apples / 10")
 
+' Number parsing
+tests.Append New TestCase("a=10+5", "a = 10 + 5")
+tests.Append New TestCase("a=-10+5", "a = -10 + 5")
+tests.Append New TestCase("a=-10.5+5", "a = -10.5 + 5")
+
 '
 ' Add tests if paren padding
 '
