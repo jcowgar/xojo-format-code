@@ -25,6 +25,12 @@ Dim PadParensInner As Boolean = False
 ' Pad outside parens with space?
 Dim PadParensOuter As Boolean = False
 
+' Pad operators with a space?
+Dim PadOperators As Boolean = True
+
+' Pad a comma with a trailing space?
+Dim PadComma As Boolean = True
+
 ' Appends debug information to the end of the editor. This should be
 ' set to true only for those working on Code Formatter.
 Dim DoDebug As Boolean = False
@@ -422,11 +428,18 @@ If nextTok <> Nil Then
 If tok.Type = Token.Comment Then
 AddEndOfLine
 
+ElseIf tok.Value = "," Then
+If PadComma Then
+AddSpace
+End If
+
 ElseIf tok.Value = ")" And nextTok.Value.Left(1) = "." Then
 ' Do nothing
 
 ElseIf tok.Type = Token.Special And nextTok.Value = "(" Then
-If tok.Value <> "(" Or PadParensInner Then
+If Not PadOperators Then
+' Do Nothing
+ElseIf tok.Value <> "(" Or PadParensInner Then
 AddSpace
 End If
 
@@ -449,6 +462,12 @@ ElseIf nextTok.Value = ")" Then
 If PadParensInner Then
 AddSpace
 End If
+
+ElseIf tok.Type = Token.Special And Not PadOperators Then
+' Do nothing
+
+ElseIf nextTok.Type = Token.Special And Not PadOperators Then
+' Do nothing
 
 ElseIf tok.Value <> "(" Or PadParensInner Then
 AddSpace

@@ -5,6 +5,8 @@
 
 Dim PadParensInner As Boolean = False
 Dim PadParensOuter As Boolean = False
+Dim PadOperators As Boolean = True
+Dim PadComma As Boolean = True
 
 '
 ' Represent a test case, good, bad and actual
@@ -39,9 +41,9 @@ DoCommand "NewMethod"
 Dim results() As String
 Dim tests() As TestCase
 
+If PadOperators And PadComma Then
 '
-' These tests are preference neutral and can be tested in various
-' configurations.
+' These tests all rely on PadOperators being True
 '
 tests.Append New TestCase("apples += 10", "apples = apples + 10")
 tests.Append New TestCase("apples -= 10", "apples = apples - 10")
@@ -59,9 +61,6 @@ tests.Append New TestCase("a=-10.5+5", "a = -10.5 + 5")
 tests.Append New TestCase("a=10' Assign 10 to A", "a = 10 ' Assign 10 to A")
 tests.Append New TestCase("a=10// Assign 10 to A", "a = 10 // Assign 10 to A")
 tests.Append New TestCase("a=10+5// comment", "a = 10 + 5 // comment")
-
-' Keywords shouldn't be parsed in a comment
-tests.Append New TestCase("' if a isa b THEN", "' if a isa b THEN")
 
 ' Comments should be read until the end of a line
 tests.Append New TestCase("a=10// comment" + EndOfLine + "b=20", _
@@ -103,6 +102,15 @@ tests.Append New TestCase(_
 "for EACH p aS PERSON in people( 5,8 )" + EndOfLine + "Next", _
 "For Each p As PERSON In people(5, 8)" + EndOfLine + "Next")
 End If
+
+Else
+tests.Append New TestCase("a = 5  + 12", "a=5+12")
+tests.Append New TestCase("Add(5, 12)", "Add(5,12)")
+End If
+
+' Keywords shouldn't be parsed in a comment
+tests.Append New TestCase("' if a isa b THEN", "' if a isa b THEN")
+tests.Append New TestCase("// if a isa b THEN", "// if a isa b THEN")
 
 '
 ' Do our testing
