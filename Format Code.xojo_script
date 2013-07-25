@@ -65,6 +65,42 @@ KeywordsToCapitalize = Array("AddHandler", "AddressOf", "Array", "As", "Assigns"
 '
 
 '
+' Try to read preferences from a `FormatCode` module in the application. If a success,
+' then those properties override the above settings.
+'
+
+Dim preferencesModuleName As String = "FormatCodePreferences"
+
+Function BooleanConstantValue(key As String, defaultValue As Boolean) As Boolean
+Select Case ConstantValue(key)
+Case "1", "Yes", "True"
+Return True
+
+Case "0", "No", "False"
+Return False
+
+Case Else
+Return defaultValue
+End Select
+End Function
+
+Select Case ConstantValue(preferencesModuleName + ".CaseConversion")
+Case "1"
+CaseConversion = kTitleCase
+
+Case "2"
+CaseConversion = kLowerCase
+
+Case "3"
+CaseConversion = kUpperCase
+End Select
+
+PadParensInner = BooleanConstantValue(preferencesModuleName + ".PadParensInner", PadParensInner)
+PadParensOuter = BooleanConstantValue(preferencesModuleName + ".PadParensOuter", PadParensOuter)
+PadOperators = BooleanConstantValue(preferencesModuleName + ".PadOperators", PadOperators)
+PadComma = BooleanConstantValue(preferencesModuleName + ".PadComma", PadComma)
+
+'
 ' Code Formatting Code
 '
 
