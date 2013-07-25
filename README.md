@@ -58,6 +58,10 @@ of two ways,
 You can also use both options, #1 to provide defaults to simple projects and #2 to override
 those defaults for specific projects.
 
+When setting options via the `FormatCodePreferences`, the CaseConversion constant can
+be numeric (1, 2, 3) or a string, "kTitleCase", "kLowerCase", "kUpperCase" and boolean
+constants can be a boolean value or a string, "Yes" or "True"
+
 CaseConversion: The capitalization of keywords
 ----------------------------------------------
 
