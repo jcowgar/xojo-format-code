@@ -3,7 +3,8 @@
 ' match the settings in your Format Code.xojo_script file otherwise failures
 ' are sure to occur, most probably false.
 
-Dim PadParens As Boolean = False
+Dim PadParensInner As Boolean = False
+Dim PadParensOuter As Boolean = False
 
 '
 ' Represent a test case, good, bad and actual
@@ -76,9 +77,17 @@ tests.Append New TestCase("a=10      // Hi", "a = 10 // Hi")
 '
 ' Add tests if paren padding
 '
-If PadParens Then
+If PadParensInner And Not PadParensOuter Then
 tests.Append New TestCase("Add(10,20)", "Add( 10, 20 )")
 tests.Append New TestCase("a=((b*Abs(c))/d)", "a = ( ( b * Abs( c ) ) / d )")
+
+ElseIf PadParensOuter And Not PadParensInner Then
+tests.Append New TestCase("Add(10,20)", "Add (10, 20)")
+tests.Append New TestCase("a=((b*Abs(c))/d)", "a = ((b * Abs (c)) / d)")
+
+ElseIf PadParensOuter And PadParensInner Then
+tests.Append New TestCase("Add(10,20)", "Add ( 10, 20 )")
+tests.Append New TestCase("a=((b*Abs(c))/d)", "a = ( ( b * Abs ( c ) ) / d )")
 
 Else
 '
