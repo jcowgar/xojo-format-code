@@ -149,6 +149,19 @@ Function IsAComment(value As String) As Boolean
 Return (value.Left(1) = "'" Or value.Left(2) = "//")
 End Function
 
+Function CaseConvert(value As String) As String
+Select Case CaseConversion
+Case 1 ' TitleCase
+Return value
+
+Case 2 ' lower case
+Return Lowercase(value)
+
+Case 3 ' UPPER CASE
+Return Uppercase(value)
+End Select
+End Function
+
 '
 ' Represent a single token
 '
@@ -170,16 +183,7 @@ Sub Constructor(v As String)
 Dim capitalizeIndex As Integer = KeywordsToCapitalize.IndexOf(v)
 
 If capitalizeIndex > -1 Then
-Select Case CaseConversion
-Case 1 ' TitleCase
-Value = KeywordsToCapitalize(capitalizeIndex)
-
-Case 2 ' lower case
-Value = Lowercase(v)
-
-Case 3 ' UPPER CASE
-Value = Uppercase(v)
-End Select
+Value = CaseConvert(KeywordsToCapitalize(capitalizeIndex))
 
 Type = Keyword
 
