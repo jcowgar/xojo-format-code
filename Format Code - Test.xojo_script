@@ -3,21 +3,62 @@
 ' match the settings in your Format Code.xojo_script file otherwise failures
 ' are sure to occur, most probably false.
 
+Dim savedClipboard As String = Clipboard
+
 Dim PadParensInner As Boolean = False
 Dim PadParensOuter As Boolean = False
 Dim PadOperators As Boolean = True
 Dim PadComma As Boolean = True
 
 '
+' Represent a configuration
+'
+Class FormatSettings
+Dim StringValue As String
+
+Sub Constructor(caseConversion As Integer, padParensInner As Boolean, padParensOuter As Boolean, _
+padOperators As Boolean, padComma As Boolean)
+Dim results() As String = Array("F", "C", ":", Str(caseConversion))
+
+If padParensInner Then
+results.Append "Y"
+Else
+results.Append "N"
+End If
+
+If padParensOuter Then
+results.Append "Y"
+Else
+results.Append "N"
+End If
+
+If padOperators Then
+results.Append "Y"
+Else
+results.Append "N"
+End If
+
+If padComma Then
+results.Append "Y"
+Else
+results.Append "N"
+End If
+
+StringValue = Join(results, "")
+End Sub
+End Class
+
+'
 ' Represent a test case, good, bad and actual
 '
-
 Class TestCase
+Dim Settings As FormatSettings
 Dim Bad As String
 Dim Good As String
 Dim Actual As String
 
-Sub Constructor(b As String, g As String)
+Sub Constructor(s As FormatSettings, b As String, g As String)
+Settings = s
 Bad = b
 Good = g
 End Sub
@@ -41,81 +82,77 @@ DoCommand "NewMethod"
 Dim results() As String
 Dim tests() As TestCase
 
-If PadOperators And PadComma Then
+Dim standardSettings As FormatSettings = New FormatSettings(1, False, False, True, True)
+Dim lowerSettings As FormatSettings = New FormatSettings(2, False, False, True, True)
+Dim upperSettings As FormatSettings = New FormatSettings(3, False, False, True, True)
+Dim padOuterSettings As FormatSettings = New FormatSettings(1, False, True, True, True)
+Dim padInnerSettings As FormatSettings = New FormatSettings(1, True, False, True, True)
+Dim padAllSettings As FormatSettings = New FormatSettings(1, True, True, True, True)
+Dim compressedSettings As FormatSettings = New FormatSettings(1, False, False, False, False)
+
 '
 ' These tests all rely on PadOperators being True
 '
-tests.Append New TestCase("apples += 10", "apples = apples + 10")
-tests.Append New TestCase("apples -= 10", "apples = apples - 10")
-tests.Append New TestCase("apples *= 10", "apples = apples * 10")
-tests.Append New TestCase("apples /= 10", "apples = apples / 10")
+tests.Append New TestCase(standardSettings, "apples += 10", "apples = apples + 10")
+tests.Append New TestCase(standardSettings, "apples -= 10", "apples = apples - 10")
+tests.Append New TestCase(standardSettings, "apples *= 10", "apples = apples * 10")
+tests.Append New TestCase(standardSettings, "apples /= 10", "apples = apples / 10")
 
 ' Number parsing
-tests.Append New TestCase("a=10+5", "a = 10 + 5")
-tests.Append New TestCase("a=-10+5", "a = -10 + 5")
-tests.Append New TestCase("a=-10.5+5", "a = -10.5 + 5")
+tests.Append New TestCase(standardSettings, "a=10+5", "a = 10 + 5")
+tests.Append New TestCase(standardSettings, "a=-10+5", "a = -10 + 5")
+tests.Append New TestCase(standardSettings, "a=-10.5+5", "a = -10.5 + 5")
 
 '
 ' Comment parsing
 '
-tests.Append New TestCase("a=10' Assign 10 to A", "a = 10 ' Assign 10 to A")
-tests.Append New TestCase("a=10// Assign 10 to A", "a = 10 // Assign 10 to A")
-tests.Append New TestCase("a=10+5// comment", "a = 10 + 5 // comment")
+tests.Append New TestCase(standardSettings, "a=10' Assign 10 to A", "a = 10 ' Assign 10 to A")
+tests.Append New TestCase(standardSettings, "a=10// Assign 10 to A", "a = 10 // Assign 10 to A")
+tests.Append New TestCase(standardSettings, "a=10+5// comment", "a = 10 + 5 // comment")
 
 ' Comments should be read until the end of a line
-tests.Append New TestCase("a=10// comment" + EndOfLine + "b=20", _
+tests.Append New TestCase(standardSettings, "a=10// comment" + EndOfLine + "b=20", _
 "a = 10 // comment" + EndOfLine + "b = 20")
 
 ' Comments should work on the first line (above cases) and subsequent lines
-tests.Append New TestCase("a=10" + EndOfLine + "// comment?" + EndOfLine + "b=20", _
+tests.Append New TestCase(standardSettings, "a=10" + EndOfLine + "// comment?" + EndOfLine + "b=20", _
 "a = 10" + EndOfLine + "// comment?" + EndOfLine + "b = 20")
 
 ' Comments should have leading space removed
-tests.Append New TestCase("a=10      // Hi", "a = 10 // Hi")
+tests.Append New TestCase(standardSettings, "a=10      // Hi", "a = 10 // Hi")
 
-'
-' Add tests if paren padding
-'
-If PadParensInner And Not PadParensOuter Then
-tests.Append New TestCase("Add(10,20)", "Add( 10, 20 )")
-tests.Append New TestCase("a=((b*Abs(c))/d)", "a = ( ( b * Abs( c ) ) / d )")
+' Keywords shouldn't be parsed in a comment
+tests.Append New TestCase(standardSettings, "' if a isa b THEN", "' if a isa b THEN")
+tests.Append New TestCase(standardSettings, "// if a isa b THEN", "// if a isa b THEN")
 
-ElseIf PadParensOuter And Not PadParensInner Then
-tests.Append New TestCase("Add(10,20)", "Add (10, 20)")
-tests.Append New TestCase("a=((b*Abs(c))/d)", "a = ((b * Abs (c)) / d)")
+tests.Append New TestCase(padInnerSettings, "Add(10,20)", "Add( 10, 20 )")
+tests.Append New TestCase(padInnerSettings, "a=((b*Abs(c))/d)", "a = ( ( b * Abs( c ) ) / d )")
 
-ElseIf PadParensOuter And PadParensInner Then
-tests.Append New TestCase("Add(10,20)", "Add ( 10, 20 )")
-tests.Append New TestCase("a=((b*Abs(c))/d)", "a = ( ( b * Abs ( c ) ) / d )")
+tests.Append New TestCase(padOuterSettings, "Add(10,20)", "Add (10, 20)")
+tests.Append New TestCase(padOuterSettings, "a=((b*Abs(c))/d)", "a = ((b * Abs (c)) / d)")
 
-Else
-'
-' Add all other tests. These tests can not be mixed with the above
-' because they assume paren padding is OFF and have parens. These
-' tests will surely fail if PadParens = True
-'
-tests.Append New TestCase(_
+tests.Append New TestCase(padAllSettings, "Add(10,20)", "Add ( 10, 20 )")
+tests.Append New TestCase(padAllSettings, "a=((b*Abs(c))/d)", "a = ( ( b * Abs ( c ) ) / d )")
+
+tests.Append New TestCase(standardSettings, _
 "dim a as integer=(18*2  )   ", _
 "Dim a As Integer = (18 * 2)")
 
-tests.Append New TestCase(_
+tests.Append New TestCase(standardSettings, _
 "for EACH p aS PERSON in people( 5,8 )" + EndOfLine + "Next", _
 "For Each p As PERSON In people(5, 8)" + EndOfLine + "Next")
-End If
 
-Else
-tests.Append New TestCase("a = 5  + 12", "a=5+12")
-tests.Append New TestCase("Add(5, 12)", "Add(5,12)")
-End If
-
-' Keywords shouldn't be parsed in a comment
-tests.Append New TestCase("' if a isa b THEN", "' if a isa b THEN")
-tests.Append New TestCase("// if a isa b THEN", "// if a isa b THEN")
+tests.Append New TestCase(compressedSettings, "a = 5  + 12", "a=5+12")
+tests.Append New TestCase(compressedSettings, "Add(5, 12)", "Add(5,12)")
 
 ' me, self and super should all adhere to case conversion
-tests.Append New TestCase("me.hello()", "Me.hello()")
-tests.Append New TestCase("self.hello()", "Self.hello()")
-tests.Append New TestCase("super.hello()", "Super.hello()")
+tests.Append New TestCase(standardSettings, "me.hello()", "Me.hello()")
+tests.Append New TestCase(standardSettings, "self.hello()", "Self.hello()")
+tests.Append New TestCase(standardSettings, "super.hello()", "Super.hello()")
+
+tests.Append New TestCase(standardSettings, "iF tRUE thEN", "If True Then")
+tests.Append New TestCase(lowerSettings, "iF tRUE thEN", "if true then")
+tests.Append New TestCase(upperSettings, "iF tRUE thEN", "IF TRUE THEN")
 
 '
 ' Do our testing
@@ -124,6 +161,8 @@ tests.Append New TestCase("super.hello()", "Super.hello()")
 Dim i As Integer
 For i = 0 To tests.Ubound
 Dim tc As TestCase = tests(i)
+
+Clipboard = tc.Settings.StringValue
 
 Text = tc.Bad
 RunScript "Format Code.xojo_script"
@@ -156,3 +195,5 @@ Join(results, "")
 End If
 
 Text = msg
+
+Clipboard = savedClipboard

@@ -100,6 +100,17 @@ PadParensOuter = BooleanConstantValue(preferencesModuleName + ".PadParensOuter",
 PadOperators = BooleanConstantValue(preferencesModuleName + ".PadOperators", PadOperators)
 PadComma = BooleanConstantValue(preferencesModuleName + ".PadComma", PadComma)
 
+If Clipboard.Len = 8 And Clipboard.Left(3) = "FC:" Then
+'Call ShowDialog("Howdy", Clipboard, "OK")
+
+' Get configuration settings from the clipboard, this is used only in unit testing
+CaseConversion = Val(Clipboard.Mid(4, 1))
+PadParensInner = Clipboard.Mid(5, 1) = "Y"
+PadParensOuter = Clipboard.Mid(6, 1) = "Y"
+PadOperators = Clipboard.Mid(7, 1) = "Y"
+PadComma = Clipboard.Mid(8, 1) = "Y"
+End If
+
 '
 ' Code Formatting Code
 '
