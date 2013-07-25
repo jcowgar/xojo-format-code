@@ -38,6 +38,22 @@ Copy `Format Code.xojo_script` to the `Scripts` directory of your Xojo Installat
 Optionally copy the `Format Code - Test.xojo_script` there also if you wish to run
 unit testing, make new features or submit bug reports with failing unit tests.
 
+If you are keeping up with the bleeding edge Format Code development via git, you may
+wish to clone the repository, then create symbolic links instead of copying the script
+each update. An example for OS X at the time of this writing:
+
+    $ cd $HOME/development
+    $ git clone https://github.com/jcowgar/xojo-format-code.git
+    $ cd xojo-format-code
+    $ ln -s Format\ Code.xojo_script /Applications/Xojo\ 2013\ Release\ 2/Scripts/
+
+Now when a new commit is pushed or release made, simply:
+
+    $ cd $HOME/development/xojo-format-code
+    $ git pull
+
+and you will be running the bleeding edge.
+
 Options
 =======
 
