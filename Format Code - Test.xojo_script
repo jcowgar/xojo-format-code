@@ -112,6 +112,11 @@ End If
 tests.Append New TestCase("' if a isa b THEN", "' if a isa b THEN")
 tests.Append New TestCase("// if a isa b THEN", "// if a isa b THEN")
 
+' me, self and super should all adhere to case conversion
+tests.Append New TestCase("me.hello()", "Me.hello()")
+tests.Append New TestCase("self.hello()", "Self.hello()")
+tests.Append New TestCase("super.hello()", "Super.hello()")
+
 '
 ' Do our testing
 '
