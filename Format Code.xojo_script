@@ -85,13 +85,13 @@ End Select
 End Function
 
 Select Case ConstantValue(preferencesModuleName + ".CaseConversion")
-Case "1"
+Case "1", "kTitleCase"
 CaseConversion = kTitleCase
 
-Case "2"
+Case "2", "kLowerCase"
 CaseConversion = kLowerCase
 
-Case "3"
+Case "3", "kUpperCase"
 CaseConversion = kUpperCase
 End Select
 
