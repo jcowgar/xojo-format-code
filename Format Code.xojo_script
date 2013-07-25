@@ -1,7 +1,7 @@
 '
 ' Format Xojo code in the currently opened method
 '
-' Version: 1.0.0b1
+' Version: 1.0.0b2
 ' Author: Jeremy Cowgar <jeremy@cowgar.com>
 ' Contributors: 
 ' 
