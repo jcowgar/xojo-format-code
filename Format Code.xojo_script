@@ -210,9 +210,11 @@ Type = Identifier
 
 If Value.InStr(".") > 0 Then
 If Value.Left(3) = "me." Then
-Value = "Me." + Value.Mid(4)
+Value = CaseConvert("Me.") + Value.Mid(4)
 ElseIf Value.Left(5) = "self." Then
-Value = "Self." + Value.Mid(6)
+Value = CaseConvert("Self.") + Value.Mid(6)
+ElseIf Value.Left(6) = "super." Then
+Value = CaseConvert("Super.") + Value.Mid(7)
 End If
 End If
 End If
