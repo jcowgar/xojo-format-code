@@ -41,7 +41,22 @@ unit testing, make new features or submit bug reports with failing unit tests.
 Options
 =======
 
-Users can set options to control various aspects of Format Code.
+Users can set options to control various aspects of Format Code. Options can be set one
+of two ways, 
+
+1. Change configuration settings at the top of `Format Code.xojo_script`: This will
+   enable your preferences to be applied across multiple projects w/o change. It does
+   not allow for custom settings per project and each time you update
+   `Format Code.xojo_script` you will have to re-apply your custom settings.
+2. Create a module named `FormatCodePreferences` and add constants with the same names
+   as the variables in the script. This allows you to have per-project settings and
+   be able to update `Format Code.xojo_script` easily. This module does not have to
+   contain all, or any, of the preferences but any preference that is found in the
+   module will override any preference set manually in the `Format Code.xojo_script`
+   file.
+   
+You can also use both options, #1 to provide defaults to simple projects and #2 to override
+those defaults for specific projects.
 
 CaseConversion: The capitalization of keywords
 ----------------------------------------------
