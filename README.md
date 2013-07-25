@@ -36,8 +36,8 @@ Options
 
 Users can set options to control various aspects of Format Code.
 
-The capitalization of keywords
-------------------------------
+CaseConversion: The capitalization of keywords
+----------------------------------------------
 
     byREF
 
@@ -47,15 +47,45 @@ Would become:
     byref // If CaseConversion = kLowerCase
     BYREF // If CaseConversion = kUpperCase
 
-Padding of parens
------------------
+PadParensInner: Inner parenthesis padding
+-----------------------------------------
 
-    Add(1, Abs(something))
+    Add ( 1 ,  Abs(something ) )
 
 Would become:
 
     Add(1, Abs(something))     // If PadParens = False
     Add( 1, Abs( something ) ) // If PadParens = True
+
+PadParensOuter: Outer parenthesis padding
+-----------------------------------------
+
+    Add  ( 1 , Abs ( something    ) )
+
+Would become:
+
+    Add(1, Abs(something))   // If PadParensOuter = False
+    Add (1, Abs (something)) // If PadParensOuter = True
+
+PadOperators: Operator padding
+------------------------------
+
+    a   = 10   + 5
+
+Would become:
+
+    a=10+5     // If PadOperators = False
+    a = 10 + 5 // If PadOperators = True
+
+PadComma: Comma padding
+-----------------------
+
+    Add(10,   5)
+
+Would become:
+
+    Add(10,5)  // If PadComma = False
+    Add(10, 5) // If PadComma = True
 
 Keywords
 --------
