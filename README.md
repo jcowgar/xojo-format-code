@@ -31,6 +31,13 @@ Automagically becomes:
     appleCount = appleCount * bushelsInTruck
     appleCount = appleCount / peopleHelpingToUnload
 
+Installation
+============
+
+Copy `Format Code.xojo_script` to the `Scripts` directory of your Xojo Installation.
+Optionally copy the `Format Code - Test.xojo_script` there also if you wish to run
+unit testing, make new features or submit bug reports with failing unit tests.
+
 Options
 =======
 
