@@ -154,6 +154,9 @@ tests.Append New TestCase(standardSettings, "iF tRUE thEN", "If True Then")
 tests.Append New TestCase(lowerSettings, "iF tRUE thEN", "if true then")
 tests.Append New TestCase(upperSettings, "iF tRUE thEN", "IF TRUE THEN")
 
+' Strings shouldn't be messed with
+tests.Append New TestCase(standardSettings, """if TrUe ThEn""", """if TrUe ThEn""")
+
 '
 ' Do our testing
 '
