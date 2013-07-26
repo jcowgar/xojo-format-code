@@ -157,6 +157,16 @@ tests.Append New TestCase(upperSettings, "iF tRUE thEN", "IF TRUE THEN")
 ' Strings shouldn't be messed with
 tests.Append New TestCase(standardSettings, """if TrUe ThEn""", """if TrUe ThEn""")
 
+' Test to make sure combination operators are properly output as one unit
+tests.Append New TestCase(standardSettings, "8>=20 And 8<=99 And 8<>9", "8 >= 20 And 8 <= 99 And 8 <> 9")
+
+' Padding around the pair operator
+tests.Append New TestCase(standardSettings, "1:2", "1 : 2")
+
+' Continuation character properly formatted
+tests.Append New TestCase(standardSettings, "a=10+ _", "a = 10 + _")
+tests.Append New TestCase(standardSettings, "a=10+ _' Hi", "a = 10 + _ ' Hi")
+
 '
 ' Do our testing
 '
