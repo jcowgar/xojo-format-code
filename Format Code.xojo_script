@@ -1,7 +1,7 @@
 '
 ' Format Xojo code in the currently opened method
 '
-const kVersion = "1.1.0b1"
+const kVersion = "1.1.0b2"
 ' Author: Jeremy Cowgar <jeremy@cowgar.com>
 ' Contributors: 
 ' Kem Tekinay <ktekinay@mactechnologies.com>
@@ -112,6 +112,8 @@ Dim value As String = ConstantValue(key).Trim
 If value = "" Then
 Return defaultValue
 Else
+value = value.ReplaceAll(EndOfLine, ",")
+
 Dim arr() As String
 arr = Split(value, ",")
 
@@ -120,8 +122,34 @@ Dim i As Integer
 For i = 0 To arr.Ubound
 arr(i) = arr(i).Trim
 Next i
+
+' Remove any blank items
+For i = arr.Ubound DownTo 0
+if arr(i) = "" then
+arr.Remove i
+end if
+Next i
+
 Return arr()
 End If
+End Function
+
+Function MergeArrays(arr1() As String, arr2() As String) As String()
+Dim result() As String
+ReDim result(arr1.Ubound + arr2.Ubound + 1)
+Dim resultIndex As Integer = -1
+
+Dim i As Integer
+For i = 0 to arr1.Ubound
+resultIndex = resultIndex + 1
+result(resultIndex) = arr1(i)
+Next i
+For i = 0 to arr2.Ubound
+resultIndex = resultIndex + 1
+result(resultIndex) = arr2(i)
+Next i
+
+Return result()
 End Function
 
 Select Case ConstantValue(preferencesModuleName + ".CaseConversion")
@@ -142,6 +170,12 @@ PadComma = BooleanConstantValue(preferencesModuleName + ".PadComma", PadComma)
 KeywordsToTitleCase = ArrayConstantValue(preferencesModuleName + ".KeywordsToTitleCase", KeywordsToTitleCase)
 KeywordsToUpperCase = ArrayConstantValue(preferencesModuleName + ".KeywordsToUpperCase", KeywordsToUpperCase)
 KeywordsToLowerCase = ArrayConstantValue(preferencesModuleName + ".KeywordsToLowerCase", KeywordsToLowerCase)
+
+' Grab any additional, user-defined keywords from the module. These will be added to the list above.
+Dim AdditionalKeywords() As String
+AdditionalKeywords = ArrayConstantValue(preferencesModuleName + ".AdditionalKeywords", AdditionalKeywords)
+KeywordsToCapitalize = MergeArrays(KeywordsToCapitalize, AdditionalKeywords)
+Redim AdditionalKeywords(-1) ' We don't need this anymore
 
 If Clipboard.Len = 8 And Clipboard.Left(3) = "FC:" Then
 'Call ShowDialog("Howdy", Clipboard, "OK")
