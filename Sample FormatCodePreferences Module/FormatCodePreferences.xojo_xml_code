@@ -115,11 +115,11 @@
   <ItemFlags>1</ItemFlags>
  </Constant>
  <Constant>
-  <ItemName>keywordsToTitleCase</ItemName>
+  <ItemName>KeywordsToTitleCase</ItemName>
   <Compatibility></Compatibility>
   <Visible>1</Visible>
   <TextEncoding>134217984</TextEncoding>
-  <ItemName>keywordsToTitleCase</ItemName>
+  <ItemName>KeywordsToTitleCase</ItemName>
   <ItemType>0</ItemType>
   <ItemDef></ItemDef>
   <ItemFlags>1</ItemFlags>
