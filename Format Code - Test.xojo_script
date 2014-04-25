@@ -77,6 +77,7 @@ End Class
 ' we will actually do our testing.
 '
 NewConsoleProject
+DoCommand "NewModule"
 DoCommand "NewMethod"
 
 Dim results() As String
