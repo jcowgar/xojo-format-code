@@ -1,9 +1,10 @@
 '
 ' Format Xojo code in the currently opened method
 '
-' Version: 1.0.0b2
+' Version: 2014r1
 ' Author: Jeremy Cowgar <jeremy@cowgar.com>
 ' Contributors: 
+'   - Kem Tekinay
 ' 
 
 Const kTitleCase = 1
