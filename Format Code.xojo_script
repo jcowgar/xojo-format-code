@@ -140,8 +140,6 @@ KeywordsToUpperCase = ArrayConstantValue(preferencesModuleName + ".KeywordsToUpp
 KeywordsToLowerCase = ArrayConstantValue(preferencesModuleName + ".KeywordsToLowerCase", KeywordsToLowerCase)
 
 If Clipboard.Len = 8 And Clipboard.Left(3) = "FC:" Then
-'Call ShowDialog("Howdy", Clipboard, "OK")
-
 ' Get configuration settings from the clipboard, this is used only in unit testing
 CaseConversion = Val(Clipboard.Mid(4, 1))
 PadParensInner = Clipboard.Mid(5, 1) = "Y"
