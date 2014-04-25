@@ -1,9 +1,10 @@
 '
 ' Format Xojo code in the currently opened method
 '
-' Version: 1.0.0b2
+const kVersion = "1.1.0b1"
 ' Author: Jeremy Cowgar <jeremy@cowgar.com>
 ' Contributors: 
+' Kem Tekinay <ktekinay@mactechnologies.com>
 ' 
 
 Const kTitleCase = 1
@@ -60,9 +61,12 @@ KeywordsToCapitalize = Array("AddHandler", "AddressOf", "Array", "As", "Assigns"
 
 ' Set up additional arrays of keywords that should be treated in a special way.
 ' Keywords that do not appear in any of these arrays will be treated with the default behavior.
+' Values in any of these arrays will override the default.
+'
 ' For example, iIf you want all of your keywords title cased except for if/then/else,
 ' you'd set CaseConversion to kTitleCase and add "if", "then", and "else" to 
-' KeywordsToLowercase.
+' KeywordsToLowercase. You could also add something like MyClass to KeywordsToTitleCase
+' and it will be replaced too.
 '
 ' You can add these to your FormatCodePreferences module.
 
@@ -169,11 +173,12 @@ End Function
 Function IsANumber(value As String) As Boolean
 Dim hasDecimal As Boolean = False
 
-For i As Integer = 1 To value.Len
+Dim chars() As String = Split(value, "")
+For i As Integer = 0 To chars.Ubound
 Dim chCode As Integer
-chCode = Asc(value.Mid(i, 1))
+chCode = Asc(chars(i))
 
-If i = 1 And (chCode = 43 Or chCode = 45) Then
+If i = 0 And (chCode = 43 Or chCode = 45) Then
 ' Good
 
 ElseIf chCode >= 48 And chCode <= 57 Then
@@ -199,27 +204,23 @@ Function IsAComment(value As String) As Boolean
 Return (value.Left(1) = "'" Or value.Left(2) = "//")
 End Function
 
-Function CaseConvert(value As String) As String
-Dim thisCaseConversion As Integer = CaseConversion
+Function FirstLetterCap(value As String) As String
+Return value.Left( 1 ).Uppercase + value.Mid( 2 )
+End Function
 
-' Check to see if this token is on a special list
-If KeywordsToTitleCase.IndexOf(value) <> -1 Then
-thisCaseConversion = kTitleCase
-ElseIf KeywordsToUpperCase.IndexOf(value) <> -1 Then
-thisCaseConversion = kUpperCase
-ElseIf KeywordsToLowerCase.IndexOf(value) <> -1 Then
-thisCaseConversion = kLowerCase
-End If
-
+Function CaseConvert(value As String, thisCaseConversion As Integer) As String
 Select Case thisCaseConversion
 Case kTitleCase ' TitleCase
-Return value
+Return FirstLetterCap(value) ' Not using native TitleCase since that will lowercase the remaining letters
 
 Case kLowerCase ' lower case
 Return Lowercase(value)
 
 Case kUpperCase ' UPPER CASE
 Return Uppercase(value)
+Else
+Print "Something went wrong with capitalizing!"
+Return value
 End Select
 End Function
 
@@ -241,10 +242,27 @@ Dim StartIndex As Integer
 Dim Length As Integer
 
 Sub Constructor(v As String)
-Dim capitalizeIndex As Integer = KeywordsToCapitalize.IndexOf(v)
+Dim thisCaseConversion As Integer = kUpperCase
+Dim useArray() As String = KeywordsToUpperCase
+Dim capitalizeIndex As Integer = KeywordsToUpperCase.IndexOf(v)
+If capitalizeIndex = -1 Then
+thisCaseConversion = kLowerCase
+useArray = KeywordsToLowerCase
+capitalizeIndex = KeywordsToLowerCase.IndexOf(v)
+End If
+if capitalizeIndex = -1 Then
+thisCaseConversion = kTitleCase
+useArray = KeywordsToTitleCase
+capitalizeIndex = KeywordsToTitleCase.IndexOf(v)
+End If
+If capitalizeIndex = -1 Then
+thisCaseConversion = CaseConversion
+useArray = KeywordsToCapitalize
+capitalizeIndex = KeywordsToCapitalize.IndexOf(v)
+End If
 
 If capitalizeIndex > -1 Then
-Value = CaseConvert(KeywordsToCapitalize(capitalizeIndex))
+Value = CaseConvert(useArray(capitalizeIndex), thisCaseConversion)
 
 Type = Keyword
 
@@ -269,13 +287,13 @@ Type = StringLiteral
 Else
 Type = Identifier
 
-If Value.InStr(".") > 0 Then
+If Value.InStr(".") <> 0 Then
 If Value.Left(3) = "me." Then
-Value = CaseConvert("Me.") + Value.Mid(4)
+Value = CaseConvert("Me.", CaseConversion) + Value.Mid(4)
 ElseIf Value.Left(5) = "self." Then
-Value = CaseConvert("Self.") + Value.Mid(6)
+Value = CaseConvert("Self.", CaseConversion) + Value.Mid(6)
 ElseIf Value.Left(6) = "super." Then
-Value = CaseConvert("Super.") + Value.Mid(7)
+Value = CaseConvert("Super.", CaseConversion) + Value.Mid(7)
 End If
 End If
 End If
@@ -616,6 +634,9 @@ End If
 Dim result As String = writer.Format(tokenize.Tokens)
 
 If DoDebug Then
+result = result + EndOfLine + EndOfLine + "' ==== Format Code Script Debug Information ====" 
+result = result + EndOfLine + "' Version: " + kVersion
+result = result + EndOfLine + "' (this output is here because DoDebug is set to True within the script)"
 result = result + EndOfLine + EndOfLine + writer.DebugString
 End If
 
