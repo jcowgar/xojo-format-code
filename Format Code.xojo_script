@@ -58,6 +58,25 @@ KeywordsToCapitalize = Array("AddHandler", "AddressOf", "Array", "As", "Assigns"
 "Structure", "UInt16", "UInt32", "UInt64", "UInt8", "UShort", "WindowPtr", _
 "WString", "XMLNodeType")
 
+' Set up additional arrays of keywords that should be treated in a special way.
+' Keywords that do not appear in any of these arrays will be treated with the default behavior.
+' For example, iIf you want all of your keywords title cased except for if/then/else,
+' you'd set CaseConversion to kTitleCase and add "if", "then", and "else" to 
+' KeywordsToLowercase.
+'
+' You can add these to your FormatCodePreferences module.
+
+Dim KeywordsToTitleCase() As String 
+Dim KeywordsToUpperCase() As String
+Dim KeywordsToLowerCase() As String
+
+' Fill in your preferences here
+KeywordsToTitleCase = Array("")
+
+KeywordsToUpperCase = Array("")
+
+KeywordsToLowerCase = Array("")
+
 '
 ' 
 ' END OF USER PREFERENCES
@@ -84,14 +103,31 @@ Return defaultValue
 End Select
 End Function
 
+Function ArrayConstantValue(key As String, defaultValue() As String) As String()
+Dim value As String = ConstantValue(key).Trim
+If value = "" Then
+Return defaultValue
+Else
+Dim arr() As String
+arr = Split(value, ",")
+
+' Make sure each value is free of surrounding spaces
+Dim i As Integer
+For i = 0 To arr.Ubound
+arr(i) = arr(i).Trim
+Next i
+Return arr()
+End If
+End Function
+
 Select Case ConstantValue(preferencesModuleName + ".CaseConversion")
-Case "1", "kTitleCase"
+Case "kTitleCase", Str(kTitleCase)
 CaseConversion = kTitleCase
 
-Case "2", "kLowerCase"
+Case "kLowerCase", Str(kLowerCase)
 CaseConversion = kLowerCase
 
-Case "3", "kUpperCase"
+Case "kUpperCase", Str(kUpperCase)
 CaseConversion = kUpperCase
 End Select
 
@@ -99,6 +135,9 @@ PadParensInner = BooleanConstantValue(preferencesModuleName + ".PadParensInner",
 PadParensOuter = BooleanConstantValue(preferencesModuleName + ".PadParensOuter", PadParensOuter)
 PadOperators = BooleanConstantValue(preferencesModuleName + ".PadOperators", PadOperators)
 PadComma = BooleanConstantValue(preferencesModuleName + ".PadComma", PadComma)
+KeywordsToTitleCase = ArrayConstantValue(preferencesModuleName + ".KeywordsToTitleCase", KeywordsToTitleCase)
+KeywordsToUpperCase = ArrayConstantValue(preferencesModuleName + ".KeywordsToUpperCase", KeywordsToUpperCase)
+KeywordsToLowerCase = ArrayConstantValue(preferencesModuleName + ".KeywordsToLowerCase", KeywordsToLowerCase)
 
 If Clipboard.Len = 8 And Clipboard.Left(3) = "FC:" Then
 'Call ShowDialog("Howdy", Clipboard, "OK")
@@ -161,14 +200,25 @@ Return (value.Left(1) = "'" Or value.Left(2) = "//")
 End Function
 
 Function CaseConvert(value As String) As String
-Select Case CaseConversion
-Case 1 ' TitleCase
+Dim thisCaseConversion As Integer = CaseConversion
+
+' Check to see if this token is on a special list
+If KeywordsToTitleCase.IndexOf(value) <> -1 Then
+thisCaseConversion = kTitleCase
+ElseIf KeywordsToUpperCase.IndexOf(value) <> -1 Then
+thisCaseConversion = kUpperCase
+ElseIf KeywordsToLowerCase.IndexOf(value) <> -1 Then
+thisCaseConversion = kLowerCase
+End If
+
+Select Case thisCaseConversion
+Case kTitleCase ' TitleCase
 Return value
 
-Case 2 ' lower case
+Case kLowerCase ' lower case
 Return Lowercase(value)
 
-Case 3 ' UPPER CASE
+Case kUpperCase ' UPPER CASE
 Return Uppercase(value)
 End Select
 End Function
