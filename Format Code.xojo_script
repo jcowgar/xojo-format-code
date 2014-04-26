@@ -1,17 +1,10 @@
 '
 ' Format Xojo code in the currently opened method
 '
-<<<<<<< .merge_file_snzkUX
-const kVersion = "1.1.0b2"
+const kVersion = "2014r1"
 ' Author: Jeremy Cowgar <jeremy@cowgar.com>
 ' Contributors: 
 ' Kem Tekinay <ktekinay@mactechnologies.com>
-=======
-' Version: 2014r1
-' Author: Jeremy Cowgar <jeremy@cowgar.com>
-' Contributors: 
-'   - Kem Tekinay
->>>>>>> .merge_file_V4WbZz
 ' 
 
 Const kTitleCase = 1
