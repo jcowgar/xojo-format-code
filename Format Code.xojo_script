@@ -1,9 +1,10 @@
 '
 ' Format Xojo code in the currently opened method
 '
-' Version: 1.0.0b2
+' Version: 2014r1
 ' Author: Jeremy Cowgar <jeremy@cowgar.com>
 ' Contributors: 
+'   - Kem Tekinay
 ' 
 
 Const kTitleCase = 1
@@ -140,8 +141,6 @@ KeywordsToUpperCase = ArrayConstantValue(preferencesModuleName + ".KeywordsToUpp
 KeywordsToLowerCase = ArrayConstantValue(preferencesModuleName + ".KeywordsToLowerCase", KeywordsToLowerCase)
 
 If Clipboard.Len = 8 And Clipboard.Left(3) = "FC:" Then
-'Call ShowDialog("Howdy", Clipboard, "OK")
-
 ' Get configuration settings from the clipboard, this is used only in unit testing
 CaseConversion = Val(Clipboard.Mid(4, 1))
 PadParensInner = Clipboard.Mid(5, 1) = "Y"
