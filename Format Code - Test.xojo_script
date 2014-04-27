@@ -1,7 +1,33 @@
-' Testing is dramatically different for various configuration options so
-' tests are added dynamically based on settings here. These settings must
-' match the settings in your Format Code.xojo_script file otherwise failures
-' are sure to occur, most probably false.
+'
+' Our testing is done by first opening the Format Code Unit Test project.
+' This contains a module named "FormatCodePreferences" which allows us to
+' change various settings from the test script.
+'
+' We then, from the test script, create a new module and a new method in
+' that module. That method's text area is where the test script will work.
+'
+' Each call to Test(input, expected) will:
+'     1. Set the Text of the editor to `input`
+'     2. Call the 'Format Code' Xojo Script
+'     3. Compare the Text of the editor to the `expected` value
+'
+' If the newly formatted Text is equal (case sensitive) to the `expected`
+' value then our test has passed, otherwise it has failed.
+'
+' The Test method keeps track of how many tests have passed, how many have
+' failed as well as the input, expected and actual output for those tests
+' that failed.
+'
+' When all the tests are done running, the content of the editor is set to
+' an output string containing testing statistics as well as details on any
+' failed tests.
+'
+' To add new tests, simply call:
+'     Test("non-formatted-input", "expected-formatted-output")
+'
+' Be sure to set any specific options you may need/want for your test
+' prior to calling Test.
+'
 
 Const preferencesModuleName = "FormatCodePreferences"
 Const kTitleCase = 1
@@ -86,6 +112,12 @@ End Sub
 
 DoCommand "NewModule"
 DoCommand "NewMethod"
+
+' =================================================================
+' =
+' =                         TESTS
+' =
+' =================================================================
 
 Test("apples += 10", "apples = apples + 10")
 Test("apples -= 10", "apples = apples - 10")
@@ -253,14 +285,18 @@ Test("Dim abcXYZ As Integer = 12" + EndOfLine + _
 Test("Dim ABc, xYZ As Integer" + EndOfLine + "abc=xyz", _
 "Dim ABc, xYZ As Integer" + EndOfLine + "ABc = xYZ")
 
-'
-' Display the results
-'
+' =================================================================
+' =
+' =                    Display the results
+' =
+' =================================================================
 
 Text = Join(results, EndOfLine) + EndOfLine + EndOfLine + _
 "' ---------------------------------------------------------------------" + EndOfLine + _
 "' " + Str(passCount) + " test(s) passed, " + Str(failCount) + " test(s) failed"
 
+' Reset our preferences so that each time we run a test and then commit
+' to our SCM system, the test project hasn't changed.
 CaseConversion = kTitleCase
 PadParensInner = False
 PadParensOuter = False
