@@ -35,6 +35,18 @@ Sub PadComma(Assigns value As Boolean)
 ConstantValue(preferencesModuleName + ".PadComma") = If(value, "Yes", "No")
 End Sub
 
+Sub KeywordsToTitleCase(Assigns value As String)
+ConstantValue(preferencesModuleName + ".KeywordsToTitleCase") = value
+End Sub
+
+Sub KeywordsToUpperCase(Assigns value As String)
+ConstantValue(preferencesModuleName + ".KeywordsToUpperCase") = value
+End Sub
+
+Sub KeywordsToLowerCase(Assigns value As String)
+ConstantValue(preferencesModuleName + ".KeywordsToLowerCase") = value
+End Sub
+
 '
 ' Unit Test
 '
@@ -147,9 +159,19 @@ Test("me.hello()", "Me.hello()")
 Test("self.hello()", "Self.hello()")
 Test("super.hello()", "Super.hello()")
 
+CaseConversion = kTitleCase
+
 Test("iF tRUE thEN", "If True Then")
+
+CaseConversion = kLowerCase
+
 Test("iF tRUE thEN", "if true then")
+
+CaseConversion = kUpperCase
+
 Test("iF tRUE thEN", "IF TRUE THEN")
+
+CaseConversion = kTitleCase
 
 ' Strings shouldn't be messed with
 Test("""if TrUe ThEn""", """if TrUe ThEn""")
@@ -165,6 +187,23 @@ Test("1:2", "1 : 2")
 Test("a=10+ _", "a = 10 + _")
 Test("a=10+ _' Hi", "a = 10 + _ ' Hi")
 
+' Reset things to the standard
+PadParensOuter = False
+PadParensInner = False
+PadComma = True
+PadOperators = True
+
+' Optional keywords
+KeywordsToTitleCase = "SayHello,SayGoodBye"
+KeywordsToUpperCase = "ABC,DEF"
+KeywordsToLowerCase = "xyz,www"
+
+Test("sayhello(abc)", "SayHello(ABC)")
+Test("sayGOODBYE(WWW)", "SayGoodbye(www)")
+Test("abc=XYZ", "ABC = xyz")
+Test("def=abc", "DEF = ABC")
+Test("mail=good", "mail = good")
+
 '
 ' Display the results
 '
@@ -178,3 +217,6 @@ PadParensInner = False
 PadParensOuter = False
 PadOperators = True
 PadComma = True
+KeywordsToTitleCase = ""
+KeywordsToUpperCase = ""
+KeywordsToLowerCase = ""
