@@ -47,6 +47,10 @@ Sub KeywordsToLowerCase(Assigns value As String)
 ConstantValue(preferencesModuleName + ".KeywordsToLowerCase") = value
 End Sub
 
+Sub AdditionalKeywords(Assigns value As String)
+ConstantValue(preferencesModuleName + ".AdditionalKeywords") = value
+End Sub
+
 '
 ' Unit Test
 '
@@ -193,7 +197,7 @@ PadParensInner = False
 PadComma = True
 PadOperators = True
 
-' Optional keywords
+' Optional keywords with specific conversion types
 KeywordsToTitleCase = "SayHello,SayGoodBye,Val"
 KeywordsToUpperCase = "ABC,DEF"
 KeywordsToLowerCase = "xyz,www"
@@ -204,6 +208,21 @@ Test("abc=XYZ", "ABC = xyz")
 Test("def=abc", "DEF = ABC")
 Test("mail=good", "mail = good")
 Test("ABC=val(""8374 abc XYZ saYHEllo"")", "ABC = Val(""8374 abc XYZ saYHEllo"")")
+
+' Additional Keywords with default case conversion
+AdditionalKeywords = "GetName,GetAddress"
+
+CaseConversion = kTitleCase
+Test("getname(10)", "GetName(10)")
+Test("GETADDRESS(30)", "GetAddress(30)")
+
+CaseConversion = kLowerCase
+Test("getNAme(10)", "getname(10)")
+Test("GETADDRESS(30)", "getaddress(30)")
+
+CaseConversion = kUpperCase
+Test("GetName(10)", "GETNAME(10)")
+Test("GETADDRESS(30)", "GETADDRESS(30)")
 
 '
 ' Display the results

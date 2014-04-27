@@ -1,5 +1,8 @@
 #tag Module
 Protected Module FormatCodePreferences
+	#tag Constant, Name = AdditionalKeywords, Type = String, Dynamic = False, Default = \"GetName\x2CGetAddress", Scope = Public
+	#tag EndConstant
+
 	#tag Constant, Name = CaseConversion, Type = String, Dynamic = False, Default = \"1", Scope = Public
 	#tag EndConstant
 
