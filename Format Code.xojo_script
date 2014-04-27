@@ -89,6 +89,20 @@ KeywordsToLowerCase = Array("")
 '
 '
 
+Dim XojoKeywords() As String = Array("As", "Assigns", "Break", "ByRef", "ByVal", "Call", "Case", _
+"Catch", "Const", "Continue", "Declare", "Dim", "Do", "Loop", "DownTo", "Each", "Else", "End", _
+"Enum", "Exception", "Exit", "Extends", "False", "Finally", "For", "Not", "Next", "Function", _
+"GOTO", "If", "Then", "In", "Is", "IsA", "Lib", "Loop", "New", "Nil", "Optional", "ParamArray", _
+"Raise", "RaiseEvent", "Redim", "Rem", "Return", "Select", "Case", "Soft", "Static", "Step", _
+"Structure", "Sub", "Super", "Then", "To", "True", "Try", "Until", "Wend", "While", _
+"#If", "#ElseIf", "#EndIf", "#Pragma", "DebugBuild", "RBVersion", "RBVersionString", _
+"Target32Bit", "Target64Bit", "TargetBigEndian", "TargetCarbon", _
+"TargetCocoa", "TargetHasGUI", "TargetLinux", "TargetLittleEndian", _
+"TargetMacOS", "TargetMachO", "TargetWeb", "TargetWin32", "TargetX86", _
+"BackgroundTasks", "BoundsChecking", "BreakOnExceptions", "DisableAutoWaitCursor", _
+"DisableBackgroundTasks", "DisableBoundsChecking", "Error", "NilObjectChecking", _
+"StackOverflowChecking", "Unused", "Warning", "X86CallingConvention")
+
 '
 ' Try to read preferences from a `FormatCode` module in the application. If a success,
 ' then those properties override the above settings.
@@ -270,16 +284,19 @@ Sub Constructor(v As String)
 Dim thisCaseConversion As Integer = kUpperCase
 Dim useArray() As String = KeywordsToUpperCase
 Dim capitalizeIndex As Integer = KeywordsToUpperCase.IndexOf(v)
+
 If capitalizeIndex = -1 Then
 thisCaseConversion = kLowerCase
 useArray = KeywordsToLowerCase
 capitalizeIndex = KeywordsToLowerCase.IndexOf(v)
 End If
-if capitalizeIndex = -1 Then
+
+If capitalizeIndex = -1 Then
 thisCaseConversion = kTitleCase
 useArray = KeywordsToTitleCase
 capitalizeIndex = KeywordsToTitleCase.IndexOf(v)
 End If
+
 If capitalizeIndex = -1 Then
 thisCaseConversion = CaseConversion
 useArray = KeywordsToCapitalize
@@ -289,7 +306,11 @@ End If
 If capitalizeIndex > -1 Then
 Value = CaseConvert(useArray(capitalizeIndex), thisCaseConversion)
 
+If XojoKeywords.IndexOf(Value) > -1 Then
 Type = Keyword
+Else
+Type = Identifier
+End If
 
 Else
 Value = v

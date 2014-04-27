@@ -3,6 +3,15 @@ Protected Module FormatCodePreferences
 	#tag Constant, Name = CaseConversion, Type = String, Dynamic = False, Default = \"1", Scope = Public
 	#tag EndConstant
 
+	#tag Constant, Name = KeywordsToLowerCase, Type = String, Dynamic = False, Default = \"", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = KeywordsToTitleCase, Type = String, Dynamic = False, Default = \"", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = KeywordsToUpperCase, Type = String, Dynamic = False, Default = \"", Scope = Public
+	#tag EndConstant
+
 	#tag Constant, Name = PadComma, Type = String, Dynamic = False, Default = \"Yes", Scope = Public
 	#tag EndConstant
 

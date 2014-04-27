@@ -194,15 +194,16 @@ PadComma = True
 PadOperators = True
 
 ' Optional keywords
-KeywordsToTitleCase = "SayHello,SayGoodBye"
+KeywordsToTitleCase = "SayHello,SayGoodBye,Val"
 KeywordsToUpperCase = "ABC,DEF"
 KeywordsToLowerCase = "xyz,www"
 
 Test("sayhello(abc)", "SayHello(ABC)")
-Test("sayGOODBYE(WWW)", "SayGoodbye(www)")
+Test("sayGOODBYE(WWW)", "SayGoodBye(www)")
 Test("abc=XYZ", "ABC = xyz")
 Test("def=abc", "DEF = ABC")
 Test("mail=good", "mail = good")
+Test("ABC=val(""8374 abc XYZ saYHEllo"")", "ABC = Val(""8374 abc XYZ saYHEllo"")")
 
 '
 ' Display the results
