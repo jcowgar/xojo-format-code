@@ -207,6 +207,18 @@ Test("sayGOODBYE(WWW)", "SayGoodBye(www)")
 Test("abc=XYZ", "ABC = xyz")
 Test("def=abc", "DEF = ABC")
 Test("mail=good", "mail = good")
+
+' Reset things to the standard
+PadParensOuter = False
+PadParensInner = False
+PadComma = True
+PadOperators = True
+
+' Optional keywords with specific conversion types
+KeywordsToTitleCase = "SayHello,SayGoodBye,Val"
+KeywordsToUpperCase = "ABC,DEF"
+KeywordsToLowerCase = "xyz,www"
+
 Test("ABC=val(""8374 abc XYZ saYHEllo"")", "ABC = Val(""8374 abc XYZ saYHEllo"")")
 
 ' Additional Keywords with default case conversion
@@ -223,6 +235,23 @@ Test("GETADDRESS(30)", "getaddress(30)")
 CaseConversion = kUpperCase
 Test("GetName(10)", "GETNAME(10)")
 Test("GETADDRESS(30)", "GETADDRESS(30)")
+
+' KeepCase tests
+KeywordsToTitleCase = ""
+KeywordsToUpperCase = ""
+KeywordsToLowerCase = ""
+
+CaseConversion = kTitleCase
+
+Test("Dim abcXYZ As Integer = 12" + EndOfLine + _
+"Dim HELLO AS Integer = 55" + EndOfLine + _
+"abcxyz=hello", _
+"Dim abcXYZ As Integer = 12" + EndOfLine + _
+"Dim HELLO As Integer = 55" + EndOfLine + _
+"abcXYZ = HELLO")
+
+Test("Dim ABc, xYZ As Integer" + EndOfLine + "abc=xyz", _
+"Dim ABc, xYZ As Integer" + EndOfLine + "ABc = xYZ")
 
 '
 ' Display the results
