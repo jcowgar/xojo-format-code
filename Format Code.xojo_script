@@ -371,7 +371,7 @@ mCurrentPosition - mTokenStartPosition)))
 tok.StartIndex = mTokenStartPosition
 tok.Length = mCurrentPosition - mTokenStartPosition
 
-If tok.value.len > 0 Then
+If tok.Value <> "" Then
 Tokens.Append(tok)
 End If
 
