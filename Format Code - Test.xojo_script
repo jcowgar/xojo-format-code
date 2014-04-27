@@ -172,3 +172,9 @@ Test("a=10+ _' Hi", "a = 10 + _ ' Hi")
 Text = Join(results, EndOfLine) + EndOfLine + EndOfLine + _
 "' ---------------------------------------------------------------------" + EndOfLine + _
 "' " + Str(passCount) + " test(s) passed, " + Str(failCount) + " test(s) failed"
+
+CaseConversion = kTitleCase
+PadParensInner = False
+PadParensOuter = False
+PadOperators = True
+PadComma = True
