@@ -25,7 +25,15 @@
    <NoteLine>set CaseConversion = "kTitleCase" and KeywordsToLowerCase to "if,then,else". (Spaces around the</NoteLine>
    <NoteLine>keywords will be stripped by the script).</NoteLine>
    <NoteLine></NoteLine>
-   <NoteLine>The KeywordsTo... constants are comma-delimited strings.</NoteLine>
+   <NoteLine>AdditionalKeywords will be added to the defaults (all the keywords within the Xojo language) and will be </NoteLine>
+   <NoteLine>controlled by the CaseConversion value. Acceptable values for CaseConversion are:</NoteLine>
+   <NoteLine></NoteLine>
+   <NoteLine>  kTitleCase</NoteLine>
+   <NoteLine>  kUpperCase</NoteLine>
+   <NoteLine>  kLowerCase</NoteLine>
+   <NoteLine></NoteLine>
+   <NoteLine>The KeywordsTo... and AdditionalKeywords constants can be comma-delimited strings, you can put</NoteLine>
+   <NoteLine>each keyword on its own line, or any combination.</NoteLine>
   </ItemSource>
   <ItemFlags>0</ItemFlags>
  </Note>
@@ -115,11 +123,11 @@
   <ItemFlags>1</ItemFlags>
  </Constant>
  <Constant>
-  <ItemName>keywordsToTitleCase</ItemName>
+  <ItemName>KeywordsToTitleCase</ItemName>
   <Compatibility></Compatibility>
   <Visible>1</Visible>
   <TextEncoding>134217984</TextEncoding>
-  <ItemName>keywordsToTitleCase</ItemName>
+  <ItemName>KeywordsToTitleCase</ItemName>
   <ItemType>0</ItemType>
   <ItemDef></ItemDef>
   <ItemFlags>1</ItemFlags>
@@ -142,6 +150,16 @@
   <ItemName>PadComma</ItemName>
   <ItemType>3</ItemType>
   <ItemDef>True</ItemDef>
+  <ItemFlags>1</ItemFlags>
+ </Constant>
+ <Constant>
+  <ItemName>AdditionalKeywords</ItemName>
+  <Compatibility></Compatibility>
+  <Visible>1</Visible>
+  <TextEncoding>134217984</TextEncoding>
+  <ItemName>AdditionalKeywords</ItemName>
+  <ItemType>0</ItemType>
+  <ItemDef><Hex bytes="15">44696374696F6E6172790A44617465</Hex></ItemDef>
   <ItemFlags>1</ItemFlags>
  </Constant>
 </block>
