@@ -48,7 +48,7 @@ Text = bad
 RunScript "Format Code.xojo_script"
 actual = Text
 
-If expected <> actual Then
+If StrComp(expected, actual, 0) <> 0 Then
 failCount = failCount + 1
 
 results.Append("'------------------------------------------------------------" + EndOfLine + _
