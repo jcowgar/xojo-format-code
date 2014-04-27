@@ -1,11 +1,13 @@
 '
 ' Format Xojo code in the currently opened method
 '
-const kVersion = "2014r1"
 ' Author: Jeremy Cowgar <jeremy@cowgar.com>
+'
 ' Contributors: 
-' Kem Tekinay <ktekinay@mactechnologies.com>
+'   * Kem Tekinay <ktekinay@mactechnologies.com>
 ' 
+
+Const kVersion = "2014r1"
 
 Const kTitleCase = 1
 Const kLowerCase = 2
@@ -63,7 +65,7 @@ KeywordsToCapitalize = Array("AddHandler", "AddressOf", "Array", "As", "Assigns"
 ' Keywords that do not appear in any of these arrays will be treated with the default behavior.
 ' Values in any of these arrays will override the default.
 '
-' For example, iIf you want all of your keywords title cased except for if/then/else,
+' For example, if you want all of your keywords title cased except for if/then/else,
 ' you'd set CaseConversion to kTitleCase and add "if", "then", and "else" to 
 ' KeywordsToLowercase. You could also add something like MyClass to KeywordsToTitleCase
 ' and it will be replaced too.
@@ -87,12 +89,26 @@ KeywordsToLowerCase = Array("")
 '
 '
 
+Dim XojoKeywords() As String = Array("As", "Assigns", "Break", "ByRef", "ByVal", "Call", "Case", _
+"Catch", "Const", "Continue", "Declare", "Dim", "Do", "Loop", "DownTo", "Each", "Else", "End", _
+"Enum", "Exception", "Exit", "Extends", "False", "Finally", "For", "Not", "Next", "Function", _
+"GOTO", "If", "Then", "In", "Is", "IsA", "Lib", "Loop", "New", "Nil", "Optional", "ParamArray", _
+"Raise", "RaiseEvent", "Redim", "Rem", "Return", "Select", "Case", "Soft", "Static", "Step", _
+"Structure", "Sub", "Super", "Then", "To", "True", "Try", "Until", "Wend", "While", _
+"#If", "#ElseIf", "#EndIf", "#Pragma", "DebugBuild", "RBVersion", "RBVersionString", _
+"Target32Bit", "Target64Bit", "TargetBigEndian", "TargetCarbon", _
+"TargetCocoa", "TargetHasGUI", "TargetLinux", "TargetLittleEndian", _
+"TargetMacOS", "TargetMachO", "TargetWeb", "TargetWin32", "TargetX86", _
+"BackgroundTasks", "BoundsChecking", "BreakOnExceptions", "DisableAutoWaitCursor", _
+"DisableBackgroundTasks", "DisableBoundsChecking", "Error", "NilObjectChecking", _
+"StackOverflowChecking", "Unused", "Warning", "X86CallingConvention")
+
 '
 ' Try to read preferences from a `FormatCode` module in the application. If a success,
 ' then those properties override the above settings.
 '
 
-Dim preferencesModuleName As String = "FormatCodePreferences"
+Const preferencesModuleName = "FormatCodePreferences"
 
 Function BooleanConstantValue(key As String, defaultValue As Boolean) As Boolean
 Select Case ConstantValue(key)
@@ -176,15 +192,6 @@ Dim AdditionalKeywords() As String
 AdditionalKeywords = ArrayConstantValue(preferencesModuleName + ".AdditionalKeywords", AdditionalKeywords)
 KeywordsToCapitalize = MergeArrays(KeywordsToCapitalize, AdditionalKeywords)
 Redim AdditionalKeywords(-1) ' We don't need this anymore
-
-If Clipboard.Len = 8 And Clipboard.Left(3) = "FC:" Then
-' Get configuration settings from the clipboard, this is used only in unit testing
-CaseConversion = Val(Clipboard.Mid(4, 1))
-PadParensInner = Clipboard.Mid(5, 1) = "Y"
-PadParensOuter = Clipboard.Mid(6, 1) = "Y"
-PadOperators = Clipboard.Mid(7, 1) = "Y"
-PadComma = Clipboard.Mid(8, 1) = "Y"
-End If
 
 '
 ' Code Formatting Code
@@ -277,16 +284,19 @@ Sub Constructor(v As String)
 Dim thisCaseConversion As Integer = kUpperCase
 Dim useArray() As String = KeywordsToUpperCase
 Dim capitalizeIndex As Integer = KeywordsToUpperCase.IndexOf(v)
+
 If capitalizeIndex = -1 Then
 thisCaseConversion = kLowerCase
 useArray = KeywordsToLowerCase
 capitalizeIndex = KeywordsToLowerCase.IndexOf(v)
 End If
-if capitalizeIndex = -1 Then
+
+If capitalizeIndex = -1 Then
 thisCaseConversion = kTitleCase
 useArray = KeywordsToTitleCase
 capitalizeIndex = KeywordsToTitleCase.IndexOf(v)
 End If
+
 If capitalizeIndex = -1 Then
 thisCaseConversion = CaseConversion
 useArray = KeywordsToCapitalize
@@ -296,7 +306,11 @@ End If
 If capitalizeIndex > -1 Then
 Value = CaseConvert(useArray(capitalizeIndex), thisCaseConversion)
 
+If XojoKeywords.IndexOf(Value) > -1 Then
 Type = Keyword
+Else
+Type = Identifier
+End If
 
 Else
 Value = v

@@ -35,6 +35,22 @@ Sub PadComma(Assigns value As Boolean)
 ConstantValue(preferencesModuleName + ".PadComma") = If(value, "Yes", "No")
 End Sub
 
+Sub KeywordsToTitleCase(Assigns value As String)
+ConstantValue(preferencesModuleName + ".KeywordsToTitleCase") = value
+End Sub
+
+Sub KeywordsToUpperCase(Assigns value As String)
+ConstantValue(preferencesModuleName + ".KeywordsToUpperCase") = value
+End Sub
+
+Sub KeywordsToLowerCase(Assigns value As String)
+ConstantValue(preferencesModuleName + ".KeywordsToLowerCase") = value
+End Sub
+
+Sub AdditionalKeywords(Assigns value As String)
+ConstantValue(preferencesModuleName + ".AdditionalKeywords") = value
+End Sub
+
 '
 ' Unit Test
 '
@@ -48,7 +64,7 @@ Text = bad
 RunScript "Format Code.xojo_script"
 actual = Text
 
-If expected <> actual Then
+If StrComp(expected, actual, 0) <> 0 Then
 failCount = failCount + 1
 
 results.Append("'------------------------------------------------------------" + EndOfLine + _
@@ -147,9 +163,19 @@ Test("me.hello()", "Me.hello()")
 Test("self.hello()", "Self.hello()")
 Test("super.hello()", "Super.hello()")
 
+CaseConversion = kTitleCase
+
 Test("iF tRUE thEN", "If True Then")
+
+CaseConversion = kLowerCase
+
 Test("iF tRUE thEN", "if true then")
+
+CaseConversion = kUpperCase
+
 Test("iF tRUE thEN", "IF TRUE THEN")
+
+CaseConversion = kTitleCase
 
 ' Strings shouldn't be messed with
 Test("""if TrUe ThEn""", """if TrUe ThEn""")
@@ -165,6 +191,39 @@ Test("1:2", "1 : 2")
 Test("a=10+ _", "a = 10 + _")
 Test("a=10+ _' Hi", "a = 10 + _ ' Hi")
 
+' Reset things to the standard
+PadParensOuter = False
+PadParensInner = False
+PadComma = True
+PadOperators = True
+
+' Optional keywords with specific conversion types
+KeywordsToTitleCase = "SayHello,SayGoodBye,Val"
+KeywordsToUpperCase = "ABC,DEF"
+KeywordsToLowerCase = "xyz,www"
+
+Test("sayhello(abc)", "SayHello(ABC)")
+Test("sayGOODBYE(WWW)", "SayGoodBye(www)")
+Test("abc=XYZ", "ABC = xyz")
+Test("def=abc", "DEF = ABC")
+Test("mail=good", "mail = good")
+Test("ABC=val(""8374 abc XYZ saYHEllo"")", "ABC = Val(""8374 abc XYZ saYHEllo"")")
+
+' Additional Keywords with default case conversion
+AdditionalKeywords = "GetName,GetAddress"
+
+CaseConversion = kTitleCase
+Test("getname(10)", "GetName(10)")
+Test("GETADDRESS(30)", "GetAddress(30)")
+
+CaseConversion = kLowerCase
+Test("getNAme(10)", "getname(10)")
+Test("GETADDRESS(30)", "getaddress(30)")
+
+CaseConversion = kUpperCase
+Test("GetName(10)", "GETNAME(10)")
+Test("GETADDRESS(30)", "GETADDRESS(30)")
+
 '
 ' Display the results
 '
@@ -172,3 +231,12 @@ Test("a=10+ _' Hi", "a = 10 + _ ' Hi")
 Text = Join(results, EndOfLine) + EndOfLine + EndOfLine + _
 "' ---------------------------------------------------------------------" + EndOfLine + _
 "' " + Str(passCount) + " test(s) passed, " + Str(failCount) + " test(s) failed"
+
+CaseConversion = kTitleCase
+PadParensInner = False
+PadParensOuter = False
+PadOperators = True
+PadComma = True
+KeywordsToTitleCase = ""
+KeywordsToUpperCase = ""
+KeywordsToLowerCase = ""
