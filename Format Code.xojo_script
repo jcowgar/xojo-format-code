@@ -1,11 +1,13 @@
 '
 ' Format Xojo code in the currently opened method
 '
-const kVersion = "2014r1"
 ' Author: Jeremy Cowgar <jeremy@cowgar.com>
+'
 ' Contributors: 
-' Kem Tekinay <ktekinay@mactechnologies.com>
+'   * Kem Tekinay <ktekinay@mactechnologies.com>
 ' 
+
+Const kVersion = "2014r1"
 
 Const kTitleCase = 1
 Const kLowerCase = 2
@@ -63,7 +65,7 @@ KeywordsToCapitalize = Array("AddHandler", "AddressOf", "Array", "As", "Assigns"
 ' Keywords that do not appear in any of these arrays will be treated with the default behavior.
 ' Values in any of these arrays will override the default.
 '
-' For example, iIf you want all of your keywords title cased except for if/then/else,
+' For example, if you want all of your keywords title cased except for if/then/else,
 ' you'd set CaseConversion to kTitleCase and add "if", "then", and "else" to 
 ' KeywordsToLowercase. You could also add something like MyClass to KeywordsToTitleCase
 ' and it will be replaced too.
@@ -92,7 +94,7 @@ KeywordsToLowerCase = Array("")
 ' then those properties override the above settings.
 '
 
-Dim preferencesModuleName As String = "FormatCodePreferences"
+Const preferencesModuleName = "FormatCodePreferences"
 
 Function BooleanConstantValue(key As String, defaultValue As Boolean) As Boolean
 Select Case ConstantValue(key)
