@@ -36,7 +36,7 @@ Dim PadComma As Boolean = True
 
 ' Appends debug information to the end of the editor. This should be
 ' set to true only for those working on Code Formatter.
-Dim DoDebug As Boolean = True
+Dim DoDebug As Boolean = False
 
 Dim KeywordsToCapitalize() As String
 
@@ -419,7 +419,7 @@ tok.Length = value.Len
 
 Tokens.Append(tok)
 
-mTokenStartPosition = mCurrentPosition + tok.Length
+mTokenStartPosition = mCurrentPosition + 1
 End Sub
 
 Sub AddCommentToken()
