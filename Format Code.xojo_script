@@ -36,7 +36,7 @@ Dim PadComma As Boolean = True
 
 ' Appends debug information to the end of the editor. This should be
 ' set to true only for those working on Code Formatter.
-Dim DoDebug As Boolean = False
+Dim DoDebug As Boolean = True
 
 Dim KeywordsToCapitalize() As String
 
@@ -375,6 +375,7 @@ Return
 End If
 
 Dim code As String = Trim(Code.Mid(mTokenStartPosition, mCurrentPosition - mTokenStartPosition))
+If code <> "" Then
 Dim keepCase As Boolean
 
 If mIsDimming Then
@@ -397,8 +398,11 @@ Dim tok As Token = New Token(code, keepCase)
 tok.StartIndex = mTokenStartPosition
 tok.Length = mCurrentPosition - mTokenStartPosition
 
-If tok.Value <> "" Then
 Tokens.Append(tok)
+
+If tok.Type = Token.Keyword And tok.Value = "Dim" Then
+mIsDimming = True
+End If
 End If
 
 mTokenStartPosition = mCurrentPosition
@@ -406,16 +410,16 @@ mTokenStartPosition = mCurrentPosition
 If incrementPosition Then
 mTokenStartPosition = mTokenStartPosition + 1
 End If
-
-If tok.Type = Token.Keyword And tok.Value = "Dim" Then
-mIsDimming = True
-End If
 End Sub
 
 Sub AddToken(value As String)
-Tokens.Append(New Token(value))
+Dim tok As New Token(value)
+tok.StartIndex = mTokenStartPosition
+tok.Length = value.Len
 
-mTokenStartPosition = mCurrentPosition + 1
+Tokens.Append(tok)
+
+mTokenStartPosition = mCurrentPosition + tok.Length
 End Sub
 
 Sub AddCommentToken()
