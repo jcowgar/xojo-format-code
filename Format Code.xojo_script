@@ -103,6 +103,10 @@ Dim XojoKeywords() As String = Array("As", "Assigns", "Break", "ByRef", "ByVal",
 "DisableBackgroundTasks", "DisableBoundsChecking", "Error", "NilObjectChecking", _
 "StackOverflowChecking", "Unused", "Warning", "X86CallingConvention")
 
+// Some keywords can double as functions.
+// The rule is that a keyword in this array that is NOT the first token will be treated as a function.
+Dim XojoKeyWordsAsFunction() As String = Array("If")
+
 Dim KeepCaseIdentifiers() As String
 
 '
@@ -282,7 +286,7 @@ Dim Type As Integer
 Dim StartIndex As Integer
 Dim Length As Integer
 
-Sub Constructor(v As String, keepCase As Boolean = False)
+Sub Constructor(v As String, keepCase As Boolean, startOfLine As Boolean)
 Dim capitalizeIndex As Integer = -1
 Dim thisCaseConversion As Integer
 Dim useArray() As String
@@ -311,15 +315,18 @@ capitalizeIndex = KeywordsToCapitalize.IndexOf(v)
 End If
 End If
 
-If capitalizeIndex > -1 Then
+If capitalizeIndex <> -1 Then
 Value = CaseConvert(useArray(capitalizeIndex), thisCaseConversion)
 
-If XojoKeywords.IndexOf(Value) > -1 Then
+If XojoKeywords.IndexOf(Value) <> -1 Then
+If startOfLine Or XojoKeywordsAsFunction .IndexOf(Value) = -1 Then
 Type = Keyword
 Else
 Type = Identifier
 End If
-
+Else
+Type = Identifier
+End If
 Else
 Value = v
 
@@ -368,6 +375,7 @@ Private mCurrentPosition As Integer
 Private mTokenStartPosition As Integer
 Private mInString As Boolean
 Private mIsDimming As Boolean
+Private mStartOfLine As Boolean = True
 
 Sub MaybeAddToken(incrementPosition As Boolean = True)
 If mCurrentPosition <= mTokenStartPosition Then
@@ -375,6 +383,7 @@ Return
 End If
 
 Dim code As String = Trim(Code.Mid(mTokenStartPosition, mCurrentPosition - mTokenStartPosition))
+If code <> "" Then
 Dim keepCase As Boolean
 
 If mIsDimming Then
@@ -392,13 +401,17 @@ keepCase = True
 End If
 End If
 
-Dim tok As Token = New Token(code, keepCase)
+Dim tok As Token = New Token(code, keepCase, mStartOfLine)
 
 tok.StartIndex = mTokenStartPosition
 tok.Length = mCurrentPosition - mTokenStartPosition
 
-If tok.Value <> "" Then
 Tokens.Append(tok)
+
+If tok.Type = Token.Keyword And tok.Value = "Dim" Then
+mIsDimming = True
+End If
+mStartOfLine = False
 End If
 
 mTokenStartPosition = mCurrentPosition
@@ -406,16 +419,17 @@ mTokenStartPosition = mCurrentPosition
 If incrementPosition Then
 mTokenStartPosition = mTokenStartPosition + 1
 End If
-
-If tok.Type = Token.Keyword And tok.Value = "Dim" Then
-mIsDimming = True
-End If
 End Sub
 
 Sub AddToken(value As String)
-Tokens.Append(New Token(value))
+Dim tok As New Token(value, False, mStartOfLine)
+tok.StartIndex = mTokenStartPosition
+tok.Length = value.Len
+
+Tokens.Append(tok)
 
 mTokenStartPosition = mCurrentPosition + 1
+mStartOfLine = False
 End Sub
 
 Sub AddCommentToken()
@@ -437,18 +451,24 @@ Redim Tokens(-1)
 mCurrentPosition = 1
 mTokenStartPosition = 1
 mInString = False
+mStartOfLine = True
+
+Dim encounteredUnderscore As Boolean
 
 While mCurrentPosition <= CodeLength
 Dim ch As String = Code.Mid(mCurrentPosition, 1)
-Dim nextCh As String
+Dim nextCh, nextNextCh As String
 
 If mCurrentPosition < CodeLength Then
 nextCh = Code.Mid(mCurrentPosition + 1, 1)
+If (mCurrentPosition + 1) < CodeLength Then
+nextNextCh = Code.Mid(mCurrentPosition + 2, 1) ' Needed to determine `//` type comments
+End If
 End If
 
 If mInString Then
 If ch = """" Then
-If mCurrentPosition < CodeLength And Code.Mid(mCurrentPosition + 1, 1) = """" Then
+If nextCh = """" Then
 ' Increment past the next quote, it is a double quote
 mCurrentPosition = mCurrentPosition + 1
 
@@ -504,16 +524,29 @@ MaybeAddToken
 AddToken(ch)
 End If
 
-Case "(", ")", ",", "+", "*", "^", ":", EndOfLine
+Case "(", ")", ",", "+", "*", "^", ":"
 MaybeAddToken
 
 AddToken(ch)
+
+Case EndOfLine
+MaybeAddToken
+
+AddToken(ch)
+
+If encounteredUnderscore Then
+encounteredUnderscore = False ' Reset this
+Else
+mStartOfLine = True
+End If
 
 Case "_"
 ' Only process the _ character as an individual token if it is the start of a token
 ' and it is followed by a space, EndOfLine or comment character
 If mCurrentPosition = mTokenStartPosition And _
-(nextCh = EndOfLine Or nextCh = " " Or nextCh = "'") Then
+(nextCh = EndOfLine Or nextCh = " " Or nextCh = "'" Or _
+(nextCh = "/" And nextNextCh = "/")) Then
+encounteredUnderscore = True
 MaybeAddToken
 
 AddToken(ch)
@@ -549,6 +582,7 @@ Else
 AddToken(ch)
 
 End if
+
 End Select
 End If
 
@@ -607,7 +641,7 @@ nextTok = Nil
 End If
 
 If DoDebug Then
-DebugString = DebugString + "' Token: '" + tok.Value + "', Type: " + Str(tok.Type) + ", " + _
+DebugString = DebugString + "' Token: '" + tok.Value.Trim + "', Type: " + Str(tok.Type) + ", " + _
 "Start: " + Str(tok.StartIndex) + ", Length: " + Str(tok.Length) + EndOfLine
 End If
 
@@ -716,6 +750,8 @@ result = result + EndOfLine + "' (this output is here because DoDebug is set to 
 result = result + EndOfLine + EndOfLine + writer.DebugString
 End If
 
+If StrComp(result.Trim, code.Trim, 0) <> 0 Then // Make sure something has changed
+
 ' Save the cursor position (simple, doesn't always restore the position contextually)
 ' as formatting could have changed enough to make your old cursor position no longer
 ' the same as the new with the same index.
@@ -730,6 +766,8 @@ End If
 
 ' Restore the cursor position
 SelStart = cursorPosition
+
+End If
 End Sub
 
 Main()
