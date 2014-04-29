@@ -103,6 +103,8 @@ Dim XojoKeywords() As String = Array("As", "Assigns", "Break", "ByRef", "ByVal",
 "DisableBackgroundTasks", "DisableBoundsChecking", "Error", "NilObjectChecking", _
 "StackOverflowChecking", "Unused", "Warning", "X86CallingConvention")
 
+Dim KeepCaseIdentifiers() As String
+
 '
 ' Try to read preferences from a `FormatCode` module in the application. If a success,
 ' then those properties override the above settings.
@@ -280,10 +282,15 @@ Dim Type As Integer
 Dim StartIndex As Integer
 Dim Length As Integer
 
-Sub Constructor(v As String)
-Dim thisCaseConversion As Integer = kUpperCase
-Dim useArray() As String = KeywordsToUpperCase
-Dim capitalizeIndex As Integer = KeywordsToUpperCase.IndexOf(v)
+Sub Constructor(v As String, keepCase As Boolean = False)
+Dim capitalizeIndex As Integer = -1
+Dim thisCaseConversion As Integer
+Dim useArray() As String
+
+If Not keepCase Then
+thisCaseConversion = kUpperCase
+useArray = KeywordsToUpperCase
+capitalizeIndex = KeywordsToUpperCase.IndexOf(v)
 
 If capitalizeIndex = -1 Then
 thisCaseConversion = kLowerCase
@@ -301,6 +308,7 @@ If capitalizeIndex = -1 Then
 thisCaseConversion = CaseConversion
 useArray = KeywordsToCapitalize
 capitalizeIndex = KeywordsToCapitalize.IndexOf(v)
+End If
 End If
 
 If capitalizeIndex > -1 Then
@@ -359,19 +367,37 @@ Dim CodeLength As Integer
 Private mCurrentPosition As Integer
 Private mTokenStartPosition As Integer
 Private mInString As Boolean
+Private mIsDimming As Boolean
 
 Sub MaybeAddToken(incrementPosition As Boolean = True)
 If mCurrentPosition <= mTokenStartPosition Then
 Return
 End If
 
-Dim tok As Token = New Token(Trim(Code.Mid(mTokenStartPosition, _
-mCurrentPosition - mTokenStartPosition)))
+Dim code As String = Trim(Code.Mid(mTokenStartPosition, mCurrentPosition - mTokenStartPosition))
+Dim keepCase As Boolean
+
+If mIsDimming Then
+If code = "As" Then
+mIsDimming = False
+Else
+KeepCaseIdentifiers.Append code
+End If
+
+Else
+Dim keepCaseIndex As Integer = KeepCaseIdentifiers.IndexOf(code)
+If keepCaseIndex > -1 Then
+code = KeepCaseIdentifiers(keepCaseIndex)
+keepCase = True
+End If
+End If
+
+Dim tok As Token = New Token(code, keepCase)
 
 tok.StartIndex = mTokenStartPosition
 tok.Length = mCurrentPosition - mTokenStartPosition
 
-If tok.value.len > 0 Then
+If tok.Value <> "" Then
 Tokens.Append(tok)
 End If
 
@@ -379,6 +405,10 @@ mTokenStartPosition = mCurrentPosition
 
 If incrementPosition Then
 mTokenStartPosition = mTokenStartPosition + 1
+End If
+
+If tok.Type = Token.Keyword And tok.Value = "Dim" Then
+mIsDimming = True
 End If
 End Sub
 
