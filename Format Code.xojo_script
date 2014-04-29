@@ -607,7 +607,7 @@ nextTok = Nil
 End If
 
 If DoDebug Then
-DebugString = DebugString + "' Token: '" + tok.Value + "', Type: " + Str(tok.Type) + ", " + _
+DebugString = DebugString + "' Token: '" + tok.Value.Trim + "', Type: " + Str(tok.Type) + ", " + _
 "Start: " + Str(tok.StartIndex) + ", Length: " + Str(tok.Length) + EndOfLine
 End If
 
