@@ -1,6 +1,6 @@
 #tag Module
 Protected Module FormatCodePreferences
-	#tag Constant, Name = AdditionalKeywords, Type = String, Dynamic = False, Default = \"GetName\x2CGetAddress", Scope = Public
+	#tag Constant, Name = AdditionalKeywords, Type = String, Dynamic = False, Default = \"", Scope = Public
 	#tag EndConstant
 
 	#tag Constant, Name = AlignAs, Type = String, Dynamic = False, Default = \"No", Scope = Public
