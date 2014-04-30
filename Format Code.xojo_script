@@ -34,6 +34,9 @@ Dim PadOperators As Boolean = True
 ' Pad a comma with a trailing space?
 Dim PadComma As Boolean = True
 
+' Align 'As' keywords
+Dim AlignAs As Boolean = False
+
 ' Appends debug information to the end of the editor. This should be
 ' set to true only for those working on Code Formatter.
 Dim DoDebug As Boolean = False
@@ -189,6 +192,7 @@ PadParensInner = BooleanConstantValue(preferencesModuleName + ".PadParensInner",
 PadParensOuter = BooleanConstantValue(preferencesModuleName + ".PadParensOuter", PadParensOuter)
 PadOperators = BooleanConstantValue(preferencesModuleName + ".PadOperators", PadOperators)
 PadComma = BooleanConstantValue(preferencesModuleName + ".PadComma", PadComma)
+AlignAs = BooleanConstantValue(preferencesModuleName + ".AlignAs", AlignAs)
 KeywordsToTitleCase = ArrayConstantValue(preferencesModuleName + ".KeywordsToTitleCase", KeywordsToTitleCase)
 KeywordsToUpperCase = ArrayConstantValue(preferencesModuleName + ".KeywordsToUpperCase", KeywordsToUpperCase)
 KeywordsToLowerCase = ArrayConstantValue(preferencesModuleName + ".KeywordsToLowerCase", KeywordsToLowerCase)
@@ -285,6 +289,8 @@ Dim Value As String
 Dim Type As Integer
 Dim StartIndex As Integer
 Dim Length As Integer
+Dim PadLengthBefore As Integer
+Dim PadLengthAfter As Integer
 
 Sub Constructor(v As String, keepCase As Boolean, startOfLine As Boolean)
 Dim capitalizeIndex As Integer = -1
@@ -623,6 +629,107 @@ mColumn = 0
 mRow = mRow + 1
 End Sub
 
+Private Function AlignAsFindBlock(start As Integer, ByRef blockBegin As Integer, ByRef blockEnd As Integer) As Boolean
+If start >= Tokens.UBound Then
+Return False
+End If
+
+Dim foundBlock As Boolean
+Dim nextBetterBeDim As Boolean
+
+blockBegin = -1
+blockEnd = -1
+
+For i As Integer = start To Tokens.UBound
+Dim tok As Token = Tokens(i)
+
+If blockBegin = -1 And tok.Type = Token.Keyword And tok.Value = "Dim" Then
+blockBegin = i
+blockEnd = i
+
+ElseIf blockBegin > -1 And tok.Type = Token.NewLine Then
+nextBetterBeDim = True
+
+ElseIf nextBetterBeDim And tok.Type = Token.Keyword And tok.Value = "Dim" Then
+nextBetterBeDim = False
+blockEnd = i
+
+ElseIf nextBetterBeDim Then
+Exit
+End If
+Next
+
+If blockBegin > -1 And blockBegin <> blockEnd Then
+For i As Integer = blockEnd To Tokens.UBound
+Dim tok As Token = Tokens(i)
+If tok.Type = Token.Keyword And tok.Value = "As" Then
+blockEnd = i
+Exit
+End If
+Next
+
+Return True
+End If
+
+Return False
+End Function
+
+Private Sub AlignAsStatements()
+If AlignAs = False Then
+Return
+End If
+
+Dim start As Integer
+Dim blockBegin As Integer
+Dim blockEnd As Integer
+
+While AlignAsFindBlock(start, blockBegin, blockEnd)
+Dim maxVariableLength As Integer
+Dim thisVariableLength As Integer
+Dim measureNext As Boolean
+
+For i As Integer = blockBegin To blockEnd
+Dim tok As Token = Tokens(i)
+
+If tok.Type = Token.Keyword And tok.Value = "Dim" Then
+measureNext = True
+
+thisVariableLength = 0
+
+ElseIf tok.Type = Token.Keyword And tok.Value = "As" Then
+measureNext = False
+
+If thisVariableLength > maxVariableLength Then
+maxVariableLength = thisVariableLength
+End If
+
+tok.PadLengthAfter = thisVariableLength
+
+ElseIf measureNext Then
+thisVariableLength = thisVariableLength + tok.Value.Len
+
+If tok.Value = "," And PadComma Then
+thisVariableLength = thisVariableLength + 1
+End If
+End If
+Next
+
+For i As Integer = blockBegin To blockEnd
+Dim tok As Token = Tokens(i)
+
+If tok.Type = Token.Keyword And tok.Value = "As" Then
+Dim lastTok As Token = Tokens(i - 1)
+
+lastTok.PadLengthAfter = maxVariableLength - tok.PadLengthAfter
+
+tok.PadLengthAfter = 0
+End If
+Next
+
+start = blockEnd + 1
+Wend
+End Sub
+
 Function Format(theTokens() As Token) As String
 Dim i As Integer
 Dim tok, lastTok, nextTok As Token = Nil
@@ -632,6 +739,8 @@ mColumn = 0
 mResult = ""
 
 Tokens = theTokens
+
+AlignAsStatements
 
 For i = 0 To Tokens.UBound
 tok = Tokens(i)
@@ -652,7 +761,15 @@ Case EndOfLine
 AddEndOfLine
 
 Else
+For j As Integer = 1 To tok.PadLengthBefore
+AddString(" ")
+Next
+
 AddString(tok.Value)
+
+For j As Integer = 1 To tok.PadLengthAfter
+AddString(" ")
+Next
 End Select
 
 ' Add a space between tokens, if necessary

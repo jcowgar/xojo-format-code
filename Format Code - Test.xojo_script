@@ -77,6 +77,10 @@ Sub AdditionalKeywords(Assigns value As String)
 ConstantValue(preferencesModuleName + ".AdditionalKeywords") = value
 End Sub
 
+Sub AlignAs(Assigns value As Boolean)
+ConstantValue(preferencesModuleName + ".AlignAs") = If(value, "Yes", "No")
+End Sub
+
 '
 ' Unit Test
 '
@@ -309,6 +313,39 @@ Test("Dim abcXYZ As Integer = 12" + EndOfLine + _
 Test("Dim ABc, xYZ As Integer" + EndOfLine + "abc=xyz", _
 "Dim ABc, xYZ As Integer" + EndOfLine + "ABc = xYZ")
 
+' Alignment
+
+AlignAs = True
+PadComma = True
+
+Test("Dim a As Integer" + EndOfLine + _
+"Dim name As String", _
+"Dim a    As Integer" + EndOfLine + _
+"Dim name As String")
+
+Test("Dim a,b As Integer" + EndOfLine + _
+"Dim helloWorldHowAreYou As Integer", _
+"Dim a, b                As Integer" + EndOfLine + _
+"Dim helloWorldHowAreYou As Integer")
+
+Test("Dim a As Integer" + EndOfLine + _
+"Dim abc As Integer" + EndOfLine + _
+"Hi()" + EndOfLine + _
+"Dim aaaaa As Integer" + EndOfLine + _
+"Dim b As Integer", _
+"Dim a   As Integer" + EndOfLine + _
+"Dim abc As Integer" + EndOfLine + _
+"Hi()" + EndOfLine + _
+"Dim aaaaa As Integer" + EndOfLine + _
+"Dim b     As Integer")
+
+PadComma = False
+
+Test("Dim a,   b As  Integer" + EndOfLine + _
+"Dim helloWorld As Integer", _
+"Dim a,b        As Integer" + EndOfLine + _
+"Dim helloWorld As Integer")
+
 ' =================================================================
 ' =
 ' =                    Display the results
@@ -326,6 +363,9 @@ PadParensInner = False
 PadParensOuter = False
 PadOperators = True
 PadComma = True
+AlignAs = False
 KeywordsToTitleCase = ""
 KeywordsToUpperCase = ""
 KeywordsToLowerCase = ""
+AdditionalKeywords = ""
+
