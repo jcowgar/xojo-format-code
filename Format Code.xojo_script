@@ -34,9 +34,12 @@ Dim PadOperators As Boolean = True
 ' Pad a comma with a trailing space?
 Dim PadComma As Boolean = True
 
+' Align 'As' keywords
+Dim AlignAs As Boolean = False
+
 ' Appends debug information to the end of the editor. This should be
 ' set to true only for those working on Code Formatter.
-Dim DoDebug As Boolean = True
+Dim DoDebug As Boolean = False
 
 Dim KeywordsToCapitalize() As String
 
@@ -102,6 +105,10 @@ Dim XojoKeywords() As String = Array("As", "Assigns", "Break", "ByRef", "ByVal",
 "BackgroundTasks", "BoundsChecking", "BreakOnExceptions", "DisableAutoWaitCursor", _
 "DisableBackgroundTasks", "DisableBoundsChecking", "Error", "NilObjectChecking", _
 "StackOverflowChecking", "Unused", "Warning", "X86CallingConvention")
+
+// Some keywords can double as functions.
+// The rule is that a keyword in this array that is NOT the first token will be treated as a function.
+Dim XojoKeyWordsAsFunction() As String = Array("If")
 
 Dim KeepCaseIdentifiers() As String
 
@@ -185,6 +192,7 @@ PadParensInner = BooleanConstantValue(preferencesModuleName + ".PadParensInner",
 PadParensOuter = BooleanConstantValue(preferencesModuleName + ".PadParensOuter", PadParensOuter)
 PadOperators = BooleanConstantValue(preferencesModuleName + ".PadOperators", PadOperators)
 PadComma = BooleanConstantValue(preferencesModuleName + ".PadComma", PadComma)
+AlignAs = BooleanConstantValue(preferencesModuleName + ".AlignAs", AlignAs)
 KeywordsToTitleCase = ArrayConstantValue(preferencesModuleName + ".KeywordsToTitleCase", KeywordsToTitleCase)
 KeywordsToUpperCase = ArrayConstantValue(preferencesModuleName + ".KeywordsToUpperCase", KeywordsToUpperCase)
 KeywordsToLowerCase = ArrayConstantValue(preferencesModuleName + ".KeywordsToLowerCase", KeywordsToLowerCase)
@@ -281,8 +289,10 @@ Dim Value As String
 Dim Type As Integer
 Dim StartIndex As Integer
 Dim Length As Integer
+Dim PadLengthBefore As Integer
+Dim PadLengthAfter As Integer
 
-Sub Constructor(v As String, keepCase As Boolean = False)
+Sub Constructor(v As String, keepCase As Boolean, startOfLine As Boolean)
 Dim capitalizeIndex As Integer = -1
 Dim thisCaseConversion As Integer
 Dim useArray() As String
@@ -311,15 +321,18 @@ capitalizeIndex = KeywordsToCapitalize.IndexOf(v)
 End If
 End If
 
-If capitalizeIndex > -1 Then
+If capitalizeIndex <> -1 Then
 Value = CaseConvert(useArray(capitalizeIndex), thisCaseConversion)
 
-If XojoKeywords.IndexOf(Value) > -1 Then
+If XojoKeywords.IndexOf(Value) <> -1 Then
+If startOfLine Or XojoKeywordsAsFunction .IndexOf(Value) = -1 Then
 Type = Keyword
 Else
 Type = Identifier
 End If
-
+Else
+Type = Identifier
+End If
 Else
 Value = v
 
@@ -368,6 +381,7 @@ Private mCurrentPosition As Integer
 Private mTokenStartPosition As Integer
 Private mInString As Boolean
 Private mIsDimming As Boolean
+Private mStartOfLine As Boolean = True
 
 Sub MaybeAddToken(incrementPosition As Boolean = True)
 If mCurrentPosition <= mTokenStartPosition Then
@@ -393,7 +407,7 @@ keepCase = True
 End If
 End If
 
-Dim tok As Token = New Token(code, keepCase)
+Dim tok As Token = New Token(code, keepCase, mStartOfLine)
 
 tok.StartIndex = mTokenStartPosition
 tok.Length = mCurrentPosition - mTokenStartPosition
@@ -403,6 +417,8 @@ Tokens.Append(tok)
 If tok.Type = Token.Keyword And tok.Value = "Dim" Then
 mIsDimming = True
 End If
+
+mStartOfLine = False
 End If
 
 mTokenStartPosition = mCurrentPosition
@@ -413,13 +429,15 @@ End If
 End Sub
 
 Sub AddToken(value As String)
-Dim tok As New Token(value)
+Dim tok As New Token(value, False, mStartOfLine)
+
 tok.StartIndex = mTokenStartPosition
 tok.Length = value.Len
 
 Tokens.Append(tok)
 
-mTokenStartPosition = mCurrentPosition + tok.Length
+mTokenStartPosition = mCurrentPosition + 1
+mStartOfLine = False
 End Sub
 
 Sub AddCommentToken()
@@ -441,18 +459,24 @@ Redim Tokens(-1)
 mCurrentPosition = 1
 mTokenStartPosition = 1
 mInString = False
+mStartOfLine = True
+
+Dim encounteredUnderscore As Boolean
 
 While mCurrentPosition <= CodeLength
 Dim ch As String = Code.Mid(mCurrentPosition, 1)
-Dim nextCh As String
+Dim nextCh, nextNextCh As String
 
 If mCurrentPosition < CodeLength Then
 nextCh = Code.Mid(mCurrentPosition + 1, 1)
+If (mCurrentPosition + 1) < CodeLength Then
+nextNextCh = Code.Mid(mCurrentPosition + 2, 1) ' Needed to determine `//` type comments
+End If
 End If
 
 If mInString Then
 If ch = """" Then
-If mCurrentPosition < CodeLength And Code.Mid(mCurrentPosition + 1, 1) = """" Then
+If nextCh = """" Then
 ' Increment past the next quote, it is a double quote
 mCurrentPosition = mCurrentPosition + 1
 
@@ -508,16 +532,29 @@ MaybeAddToken
 AddToken(ch)
 End If
 
-Case "(", ")", ",", "+", "*", "^", ":", EndOfLine
+Case "(", ")", ",", "+", "*", "^", ":"
 MaybeAddToken
 
 AddToken(ch)
+
+Case EndOfLine
+MaybeAddToken
+
+AddToken(ch)
+
+If encounteredUnderscore Then
+encounteredUnderscore = False ' Reset this
+Else
+mStartOfLine = True
+End If
 
 Case "_"
 ' Only process the _ character as an individual token if it is the start of a token
 ' and it is followed by a space, EndOfLine or comment character
 If mCurrentPosition = mTokenStartPosition And _
-(nextCh = EndOfLine Or nextCh = " " Or nextCh = "'") Then
+(nextCh = EndOfLine Or nextCh = " " Or nextCh = "'" Or _
+(nextCh = "/" And nextNextCh = "/")) Then
+encounteredUnderscore = True
 MaybeAddToken
 
 AddToken(ch)
@@ -553,6 +590,7 @@ Else
 AddToken(ch)
 
 End if
+
 End Select
 End If
 
@@ -591,6 +629,107 @@ mColumn = 0
 mRow = mRow + 1
 End Sub
 
+Private Function AlignAsFindBlock(start As Integer, ByRef blockBegin As Integer, ByRef blockEnd As Integer) As Boolean
+If start >= Tokens.UBound Then
+Return False
+End If
+
+Dim foundBlock As Boolean
+Dim nextBetterBeDim As Boolean
+
+blockBegin = -1
+blockEnd = -1
+
+For i As Integer = start To Tokens.UBound
+Dim tok As Token = Tokens(i)
+
+If blockBegin = -1 And tok.Type = Token.Keyword And tok.Value = "Dim" Then
+blockBegin = i
+blockEnd = i
+
+ElseIf blockBegin > -1 And tok.Type = Token.NewLine Then
+nextBetterBeDim = True
+
+ElseIf nextBetterBeDim And tok.Type = Token.Keyword And tok.Value = "Dim" Then
+nextBetterBeDim = False
+blockEnd = i
+
+ElseIf nextBetterBeDim Then
+Exit
+End If
+Next
+
+If blockBegin > -1 And blockBegin <> blockEnd Then
+For i As Integer = blockEnd To Tokens.UBound
+Dim tok As Token = Tokens(i)
+If tok.Type = Token.Keyword And tok.Value = "As" Then
+blockEnd = i
+Exit
+End If
+Next
+
+Return True
+End If
+
+Return False
+End Function
+
+Private Sub AlignAsStatements()
+If AlignAs = False Then
+Return
+End If
+
+Dim start As Integer
+Dim blockBegin As Integer
+Dim blockEnd As Integer
+
+While AlignAsFindBlock(start, blockBegin, blockEnd)
+Dim maxVariableLength As Integer
+Dim thisVariableLength As Integer
+Dim measureNext As Boolean
+
+For i As Integer = blockBegin To blockEnd
+Dim tok As Token = Tokens(i)
+
+If tok.Type = Token.Keyword And tok.Value = "Dim" Then
+measureNext = True
+
+thisVariableLength = 0
+
+ElseIf tok.Type = Token.Keyword And tok.Value = "As" Then
+measureNext = False
+
+If thisVariableLength > maxVariableLength Then
+maxVariableLength = thisVariableLength
+End If
+
+tok.PadLengthAfter = thisVariableLength
+
+ElseIf measureNext Then
+thisVariableLength = thisVariableLength + tok.Value.Len
+
+If tok.Value = "," And PadComma Then
+thisVariableLength = thisVariableLength + 1
+End If
+End If
+Next
+
+For i As Integer = blockBegin To blockEnd
+Dim tok As Token = Tokens(i)
+
+If tok.Type = Token.Keyword And tok.Value = "As" Then
+Dim lastTok As Token = Tokens(i - 1)
+
+lastTok.PadLengthAfter = maxVariableLength - tok.PadLengthAfter
+
+tok.PadLengthAfter = 0
+End If
+Next
+
+start = blockEnd + 1
+Wend
+End Sub
+
 Function Format(theTokens() As Token) As String
 Dim i As Integer
 Dim tok, lastTok, nextTok As Token = Nil
@@ -600,6 +739,8 @@ mColumn = 0
 mResult = ""
 
 Tokens = theTokens
+
+AlignAsStatements
 
 For i = 0 To Tokens.UBound
 tok = Tokens(i)
@@ -620,7 +761,15 @@ Case EndOfLine
 AddEndOfLine
 
 Else
+For j As Integer = 1 To tok.PadLengthBefore
+AddString(" ")
+Next
+
 AddString(tok.Value)
+
+For j As Integer = 1 To tok.PadLengthAfter
+AddString(" ")
+Next
 End Select
 
 ' Add a space between tokens, if necessary
@@ -720,6 +869,8 @@ result = result + EndOfLine + "' (this output is here because DoDebug is set to 
 result = result + EndOfLine + EndOfLine + writer.DebugString
 End If
 
+If StrComp(result.Trim, code.Trim, 0) <> 0 Then // Make sure something has changed
+
 ' Save the cursor position (simple, doesn't always restore the position contextually)
 ' as formatting could have changed enough to make your old cursor position no longer
 ' the same as the new with the same index.
@@ -734,6 +885,8 @@ End If
 
 ' Restore the cursor position
 SelStart = cursorPosition
+
+End If
 End Sub
 
 Main()

@@ -77,11 +77,17 @@ Sub AdditionalKeywords(Assigns value As String)
 ConstantValue(preferencesModuleName + ".AdditionalKeywords") = value
 End Sub
 
+Sub AlignAs(Assigns value As Boolean)
+ConstantValue(preferencesModuleName + ".AlignAs") = If(value, "Yes", "No")
+End Sub
+
 '
 ' Unit Test
 '
 
 Sub Test(bad As String, expected As String)
+Const kDebugOutputIdentifier = "' ==== Format Code Script Debug Information ===="
+
 Dim actual As String
 
 testIndex = testIndex + 1
@@ -89,6 +95,14 @@ testIndex = testIndex + 1
 Text = bad
 RunScript "Format Code.xojo_script"
 actual = Text
+
+' Remove the debug info if it's there
+Dim pos As Integer = actual.InStr(kDebugOutputIdentifier)
+If pos <> 0 Then
+pos = pos - 2 // Get the EOL too
+actual = actual.Left(pos)
+actual = actual.Trim
+End If
 
 If StrComp(expected, actual, 0) <> 0 Then
 failCount = failCount + 1
@@ -156,24 +170,32 @@ PadParensOuter = False
 PadComma = True
 PadOperators = True
 
+Test("while(a)", "While ( a )")
+Test("if(true)then b=if(""a""=a,true,false)","If ( True ) Then b = If( ""a"" = a, True, False )")
 Test("Add(10,20)", "Add( 10, 20 )")
 Test("a=((b*Abs(c))/d)", "a = ( ( b * Abs( c ) ) / d )")
 
 PadParensOuter = True
 PadParensInner = False
 
+Test("while(b)", "While (b)")
+Test("if(true)then b=if(""b""=a,true,false)","If (True) Then b = If (""b"" = a, True, False)")
 Test("Add(10,20)", "Add (10, 20)")
 Test("a=((b*Abs(c))/d)", "a = ((b * Abs (c)) / d)")
 
 PadParensInner = True
 PadParensOuter = True
 
+Test("while(c)", "While ( c )")
+Test("if(true)then b=if(""c""=a,true,false)","If ( True ) Then b = If ( ""c"" = a, True, False )")
 Test("Add(10,20)", "Add ( 10, 20 )")
 Test("a=((b*Abs(c))/d)", "a = ( ( b * Abs ( c ) ) / d )")
 
 PadParensOuter = False
 PadParensInner = False
 
+Test("while(d)", "While (d)")
+Test("if(true)then b=if(""d""=a,true,false)","If (True) Then b = If(""d"" = a, True, False)")
 Test(_
 "dim a as integer=(18*2  )   ", _
 "Dim a As Integer = (18 * 2)")
@@ -228,6 +250,12 @@ PadParensOuter = False
 PadParensInner = False
 PadComma = True
 PadOperators = True
+
+' Line continuation character with IF and comment
+Test("if(true) _'Comment" + EndOfLine + "if(true,true,false)then", "If (True) _ 'Comment" + EndOfLine + "If(True, True, False) Then")
+Test("if(true) _ 'Comment" + EndOfLine + "if(true,true,false)then", "If (True) _ 'Comment" + EndOfLine + "If(True, True, False) Then")
+Test("if(true) _//Comment" + EndOfLine + "if(true,true,false)then", "If (True) _ //Comment" + EndOfLine + "If(True, True, False) Then")
+Test("if(true) _ //Comment" + EndOfLine + "if(true,true,false)then", "If (True) _ //Comment" + EndOfLine + "If(True, True, False) Then")
 
 ' Optional keywords with specific conversion types
 KeywordsToTitleCase = "SayHello,SayGoodBye,Val"
@@ -285,6 +313,39 @@ Test("Dim abcXYZ As Integer = 12" + EndOfLine + _
 Test("Dim ABc, xYZ As Integer" + EndOfLine + "abc=xyz", _
 "Dim ABc, xYZ As Integer" + EndOfLine + "ABc = xYZ")
 
+' Alignment
+
+AlignAs = True
+PadComma = True
+
+Test("Dim a As Integer" + EndOfLine + _
+"Dim name As String", _
+"Dim a    As Integer" + EndOfLine + _
+"Dim name As String")
+
+Test("Dim a,b As Integer" + EndOfLine + _
+"Dim helloWorldHowAreYou As Integer", _
+"Dim a, b                As Integer" + EndOfLine + _
+"Dim helloWorldHowAreYou As Integer")
+
+Test("Dim a As Integer" + EndOfLine + _
+"Dim abc As Integer" + EndOfLine + _
+"Hi()" + EndOfLine + _
+"Dim aaaaa As Integer" + EndOfLine + _
+"Dim b As Integer", _
+"Dim a   As Integer" + EndOfLine + _
+"Dim abc As Integer" + EndOfLine + _
+"Hi()" + EndOfLine + _
+"Dim aaaaa As Integer" + EndOfLine + _
+"Dim b     As Integer")
+
+PadComma = False
+
+Test("Dim a,   b As  Integer" + EndOfLine + _
+"Dim helloWorld As Integer", _
+"Dim a,b        As Integer" + EndOfLine + _
+"Dim helloWorld As Integer")
+
 ' =================================================================
 ' =
 ' =                    Display the results
@@ -302,6 +363,9 @@ PadParensInner = False
 PadParensOuter = False
 PadOperators = True
 PadComma = True
+AlignAs = False
 KeywordsToTitleCase = ""
 KeywordsToUpperCase = ""
 KeywordsToLowerCase = ""
+AdditionalKeywords = ""
+
