@@ -49,8 +49,8 @@ KeywordsToCapitalize = Array("AddHandler", "AddressOf", "Array", "As", "Assigns"
 "Break", "ByRef", "ByVal", "CType", "Call", "Case", "Catch", "Const", "Continue", _
 "Declare", "Dim", "Do", "Loop", "DownTo", "Each", "Else", "End", "Enum", "Exception", _
 "Exit", "Extends", "False", "Finally", "For", "Not", "Next", "Function", "GOTO", "GetTypeInfo", _
-"If", "Then", "In", "Is", "IsA", "Lib", "Loop", "New", "Nil", "Optional", "ParamArray", _
-"Raise", "RaiseEvent", "Redim", "Rem", "RemoveHandler", "Return", "Select", "Case", _
+"If", "Then", "In", "Is", "IsA", "Lib", "Loop", "Me", "New", "Nil", "Optional", "ParamArray", _
+"Raise", "RaiseEvent", "Redim", "Rem", "RemoveHandler", "Return", "Select", "Self", _
 "Soft", "Static", "Step", "Structure", "Sub", "Super", "Then", "To", "True", "Try", "Until", _
 "Wend", "While", "#If", "#ElseIf", "#EndIf", "#Pragma", "DebugBuild", "RBVersion", _
 "RBVersionString", "Target32Bit", "Target64Bit", "TargetBigEndian", "TargetCarbon", _
@@ -209,7 +209,7 @@ Redim AdditionalKeywords(-1) ' We don't need this anymore
 
 Dim SpecialCharacters() As String
 SpecialCharacters = Array("<", ">", "<>", ">=", "<=", "=", "+", "-", "*", "/", _
-"^", "(", ")", ",", ":")
+"^", "(", ")", ",", ":", ".")
 
 '
 ' Helper functions
@@ -353,16 +353,6 @@ Type = StringLiteral
 
 Else
 Type = Identifier
-
-If Value.InStr(".") <> 0 Then
-If Value.Left(3) = "me." Then
-Value = CaseConvert("Me.", CaseConversion) + Value.Mid(4)
-ElseIf Value.Left(5) = "self." Then
-Value = CaseConvert("Self.", CaseConversion) + Value.Mid(6)
-ElseIf Value.Left(6) = "super." Then
-Value = CaseConvert("Super.", CaseConversion) + Value.Mid(7)
-End If
-End If
 End If
 End If
 End Sub
@@ -591,6 +581,11 @@ AddToken(ch)
 
 End if
 
+Case "."
+MaybeAddToken
+
+AddToken(ch)
+
 End Select
 End If
 
@@ -786,6 +781,9 @@ End If
 ElseIf tok.Value = ")" And nextTok.Value.Left(1) = "." Then
 ' Do nothing
 
+ElseIf tok.Type = Token.Special And tok.Value = "." Then
+' Do nothing
+
 ElseIf tok.Type = Token.Special And nextTok.Value = "(" Then
 If Not PadOperators Then
 ' Do Nothing
@@ -797,6 +795,9 @@ ElseIf nextTok.Type = Token.Newline Then
 ' Do nothing
 
 ElseIf nextTok.Value = "," Then
+' Do nothing
+
+ElseIf nextTok.Value = "." Then
 ' Do nothing
 
 ElseIf nextTok.Value = "(" Then
