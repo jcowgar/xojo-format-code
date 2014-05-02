@@ -200,6 +200,7 @@ AlignEqual = BooleanConstantValue("AlignEqual", AlignEqual)
 KeywordsToTitleCase = ArrayConstantValue("KeywordsToTitleCase", KeywordsToTitleCase)
 KeywordsToUpperCase = ArrayConstantValue("KeywordsToUpperCase", KeywordsToUpperCase)
 KeywordsToLowerCase = ArrayConstantValue("KeywordsToLowerCase", KeywordsToLowerCase)
+DoDebug = BooleanConstantValue("DoDebug", DoDebug)
 
 ' Grab any additional, user-defined keywords from the module. These will be added to the list above.
 Dim AdditionalKeywords() As String

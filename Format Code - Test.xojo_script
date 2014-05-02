@@ -85,6 +85,10 @@ Sub AlignEqual(Assigns value As Boolean)
 ConstantValue(preferencesModuleName + ".AlignEqual") = If(value, "Yes", "No")
 End Sub
 
+Sub DoDebug(Assigns value As Boolean)
+ConstantValue(preferencesModuleName + ".DoDebug") = If(value, "Yes", "No")
+End Sub
+
 '
 ' Unit Test
 '
@@ -92,15 +96,16 @@ End Sub
 Sub Test(bad As String, expected As String)
 Const kDebugOutputIdentifier = "' ==== Format Code Script Debug Information ===="
 
-Dim actual As String
+Dim actualWithDebug As String
 
 testIndex = testIndex + 1
 
 Text = bad
 RunScript "Format Code Script.xojo_script"
-actual = Text
+actualWithDebug = Text
 
-' Remove the debug info if it's there
+' Remove the debug info 
+dim actual As String = actualWithDebug
 Dim pos As Integer = actual.InStr(kDebugOutputIdentifier)
 If pos <> 0 Then
 pos = pos - 2 // Get the EOL too
@@ -116,7 +121,7 @@ results.Append("'------------------------------------------------------------" +
 "'" + EndOfLine + _
 "' Sent:" + EndOfLine + bad + EndOfLine + EndOfLine + _
 "' Expected:" + EndOfLine + expected + EndOfLine + EndOfLine + _
-"' Got: " + EndOfLine + actual + EndOfLine)
+"' Got: " + EndOfLine + actualWithDebug + EndOfLine)
 
 Else
 passCount = passCount + 1
@@ -130,6 +135,8 @@ End Sub
 
 DoCommand "NewModule"
 DoCommand "NewMethod"
+
+DoDebug = True
 
 ' =================================================================
 ' =
@@ -361,6 +368,13 @@ Test("Dim a,   b As  Integer" + EndOfLine + _
 "Dim a,b        As Integer" + EndOfLine + _
 "Dim helloWorld As Integer")
 
+'
+' Intentional fail to test debug output in this script.
+' Normally this line would be commented out.
+'
+
+'Test( "RaiseEvent Open( )", "RaiseEvent Open( )") ' Not really what we'd expect
+
 ' =================================================================
 ' =
 ' =                    Display the results
@@ -384,4 +398,4 @@ KeywordsToTitleCase = ""
 KeywordsToUpperCase = ""
 KeywordsToLowerCase = ""
 AdditionalKeywords = ""
-
+DoDebug = False
