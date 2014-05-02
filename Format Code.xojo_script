@@ -37,6 +37,9 @@ Dim PadComma As Boolean = True
 ' Align 'As' keywords
 Dim AlignAs As Boolean = False
 
+' Align '=' assignments
+Dim AlignEqual As Boolean = False
+
 ' Appends debug information to the end of the editor. This should be
 ' set to true only for those working on Code Formatter.
 Dim DoDebug As Boolean = False
@@ -49,8 +52,8 @@ KeywordsToCapitalize = Array("AddHandler", "AddressOf", "Array", "As", "Assigns"
 "Break", "ByRef", "ByVal", "CType", "Call", "Case", "Catch", "Const", "Continue", _
 "Declare", "Dim", "Do", "Loop", "DownTo", "Each", "Else", "End", "Enum", "Exception", _
 "Exit", "Extends", "False", "Finally", "For", "Not", "Next", "Function", "GOTO", "GetTypeInfo", _
-"If", "Then", "In", "Is", "IsA", "Lib", "Loop", "New", "Nil", "Optional", "ParamArray", _
-"Raise", "RaiseEvent", "Redim", "Rem", "RemoveHandler", "Return", "Select", "Case", _
+"If", "Then", "In", "Is", "IsA", "Lib", "Loop", "Me", "New", "Nil", "Optional", "ParamArray", _
+"Raise", "RaiseEvent", "Redim", "Rem", "RemoveHandler", "Return", "Select", "Self", _
 "Soft", "Static", "Step", "Structure", "Sub", "Super", "Then", "To", "True", "Try", "Until", _
 "Wend", "While", "#If", "#ElseIf", "#EndIf", "#Pragma", "DebugBuild", "RBVersion", _
 "RBVersionString", "Target32Bit", "Target64Bit", "TargetBigEndian", "TargetCarbon", _
@@ -120,7 +123,7 @@ Dim KeepCaseIdentifiers() As String
 Const preferencesModuleName = "FormatCodePreferences"
 
 Function BooleanConstantValue(key As String, defaultValue As Boolean) As Boolean
-Select Case ConstantValue(key)
+Select Case ConstantValue(preferencesModuleName + "." + key)
 Case "1", "Yes", "True"
 Return True
 
@@ -133,26 +136,26 @@ End Select
 End Function
 
 Function ArrayConstantValue(key As String, defaultValue() As String) As String()
-Dim value As String = ConstantValue(key).Trim
+Dim value As String = ConstantValue(preferencesModuleName + "." + key).Trim
+
 If value = "" Then
 Return defaultValue
+
 Else
 value = value.ReplaceAll(EndOfLine, ",")
 
-Dim arr() As String
-arr = Split(value, ",")
+Dim arr() As String = Split(value, ",")
 
 ' Make sure each value is free of surrounding spaces
-Dim i As Integer
-For i = 0 To arr.Ubound
+For i As Integer = 0 To arr.Ubound
 arr(i) = arr(i).Trim
 Next i
 
 ' Remove any blank items
-For i = arr.Ubound DownTo 0
-if arr(i) = "" then
+For i As Integer = arr.Ubound DownTo 0
+If arr(i) = "" Then
 arr.Remove i
-end if
+End If
 Next i
 
 Return arr()
@@ -161,15 +164,15 @@ End Function
 
 Function MergeArrays(arr1() As String, arr2() As String) As String()
 Dim result() As String
-ReDim result(arr1.Ubound + arr2.Ubound + 1)
 Dim resultIndex As Integer = -1
+ReDim result(arr1.Ubound + arr2.Ubound + 1)
 
-Dim i As Integer
-For i = 0 to arr1.Ubound
+For i As Integer = 0 To arr1.Ubound
 resultIndex = resultIndex + 1
 result(resultIndex) = arr1(i)
 Next i
-For i = 0 to arr2.Ubound
+
+For i As Integer = 0 To arr2.Ubound
 resultIndex = resultIndex + 1
 result(resultIndex) = arr2(i)
 Next i
@@ -188,18 +191,19 @@ Case "kUpperCase", Str(kUpperCase)
 CaseConversion = kUpperCase
 End Select
 
-PadParensInner = BooleanConstantValue(preferencesModuleName + ".PadParensInner", PadParensInner)
-PadParensOuter = BooleanConstantValue(preferencesModuleName + ".PadParensOuter", PadParensOuter)
-PadOperators = BooleanConstantValue(preferencesModuleName + ".PadOperators", PadOperators)
-PadComma = BooleanConstantValue(preferencesModuleName + ".PadComma", PadComma)
-AlignAs = BooleanConstantValue(preferencesModuleName + ".AlignAs", AlignAs)
-KeywordsToTitleCase = ArrayConstantValue(preferencesModuleName + ".KeywordsToTitleCase", KeywordsToTitleCase)
-KeywordsToUpperCase = ArrayConstantValue(preferencesModuleName + ".KeywordsToUpperCase", KeywordsToUpperCase)
-KeywordsToLowerCase = ArrayConstantValue(preferencesModuleName + ".KeywordsToLowerCase", KeywordsToLowerCase)
+PadParensInner = BooleanConstantValue("PadParensInner", PadParensInner)
+PadParensOuter = BooleanConstantValue("PadParensOuter", PadParensOuter)
+PadOperators = BooleanConstantValue("PadOperators", PadOperators)
+PadComma = BooleanConstantValue("PadComma", PadComma)
+AlignAs = BooleanConstantValue("AlignAs", AlignAs)
+AlignEqual = BooleanConstantValue("AlignEqual", AlignEqual)
+KeywordsToTitleCase = ArrayConstantValue("KeywordsToTitleCase", KeywordsToTitleCase)
+KeywordsToUpperCase = ArrayConstantValue("KeywordsToUpperCase", KeywordsToUpperCase)
+KeywordsToLowerCase = ArrayConstantValue("KeywordsToLowerCase", KeywordsToLowerCase)
 
 ' Grab any additional, user-defined keywords from the module. These will be added to the list above.
 Dim AdditionalKeywords() As String
-AdditionalKeywords = ArrayConstantValue(preferencesModuleName + ".AdditionalKeywords", AdditionalKeywords)
+AdditionalKeywords = ArrayConstantValue("AdditionalKeywords", AdditionalKeywords)
 KeywordsToCapitalize = MergeArrays(KeywordsToCapitalize, AdditionalKeywords)
 Redim AdditionalKeywords(-1) ' We don't need this anymore
 
@@ -207,9 +211,8 @@ Redim AdditionalKeywords(-1) ' We don't need this anymore
 ' Code Formatting Code
 '
 
-Dim SpecialCharacters() As String
-SpecialCharacters = Array("<", ">", "<>", ">=", "<=", "=", "+", "-", "*", "/", _
-"^", "(", ")", ",", ":")
+Dim SpecialCharacters() As String = Array("<", ">", "<>", ">=", "<=", "=", "+", "-", "*", "/", _
+"^", "(", ")", ",", ":", ".")
 
 '
 ' Helper functions
@@ -254,7 +257,7 @@ Return (value.Left(1) = "'" Or value.Left(2) = "//")
 End Function
 
 Function FirstLetterCap(value As String) As String
-Return value.Left( 1 ).Uppercase + value.Mid( 2 )
+Return value.Left(1).Uppercase + value.Mid(2)
 End Function
 
 Function CaseConvert(value As String, thisCaseConversion As Integer) As String
@@ -267,8 +270,10 @@ Return Lowercase(value)
 
 Case kUpperCase ' UPPER CASE
 Return Uppercase(value)
+
 Else
 Print "Something went wrong with capitalizing!"
+
 Return value
 End Select
 End Function
@@ -330,9 +335,11 @@ Type = Keyword
 Else
 Type = Identifier
 End If
+
 Else
 Type = Identifier
 End If
+
 Else
 Value = v
 
@@ -353,16 +360,6 @@ Type = StringLiteral
 
 Else
 Type = Identifier
-
-If Value.InStr(".") <> 0 Then
-If Value.Left(3) = "me." Then
-Value = CaseConvert("Me.", CaseConversion) + Value.Mid(4)
-ElseIf Value.Left(5) = "self." Then
-Value = CaseConvert("Self.", CaseConversion) + Value.Mid(6)
-ElseIf Value.Left(6) = "super." Then
-Value = CaseConvert("Super.", CaseConversion) + Value.Mid(7)
-End If
-End If
 End If
 End If
 End Sub
@@ -389,6 +386,7 @@ Return
 End If
 
 Dim code As String = Trim(Code.Mid(mTokenStartPosition, mCurrentPosition - mTokenStartPosition))
+
 If code <> "" Then
 Dim keepCase As Boolean
 
@@ -442,6 +440,7 @@ End Sub
 
 Sub AddCommentToken()
 Dim eol As Integer = InStr(mCurrentPosition, Code, EndOfLine)
+
 If eol = 0 Then
 eol = CodeLength + 1
 End If
@@ -569,11 +568,13 @@ Case "/"
 ' two forward slash tokens.
 If nextCh = "/" Then
 MaybeAddToken(False)
+
 AddCommentToken
 
 Else
 ' Must have been division
 MaybeAddToken
+
 AddToken("/")
 End If
 
@@ -588,9 +589,12 @@ AddToken(ch + nextCh)
 
 Else
 AddToken(ch)
-
 End if
 
+Case "."
+MaybeAddToken
+
+AddToken(ch)
 End Select
 End If
 
@@ -661,9 +665,9 @@ Next
 
 If blockBegin > -1 And blockBegin <> blockEnd Then
 For i As Integer = blockEnd To Tokens.UBound
-Dim tok As Token = Tokens(i)
-If tok.Type = Token.Keyword And tok.Value = "As" Then
 blockEnd = i
+
+If Tokens(i).Type = Token.NewLine Then
 Exit
 End If
 Next
@@ -675,7 +679,7 @@ Return False
 End Function
 
 Private Sub AlignAsStatements()
-If AlignAs = False Then
+If AlignAs = False And AlignEqual = False Then
 Return
 End If
 
@@ -686,6 +690,7 @@ Dim blockEnd As Integer
 While AlignAsFindBlock(start, blockBegin, blockEnd)
 Dim maxVariableLength As Integer
 Dim thisVariableLength As Integer
+Dim maxTypeLength As Integer
 Dim measureNext As Boolean
 
 For i As Integer = blockBegin To blockEnd
@@ -705,6 +710,14 @@ End If
 
 tok.PadLengthAfter = thisVariableLength
 
+ElseIf tok.Type = Token.Special And tok.Value = "=" Then
+Dim last As Token = Tokens(i - 1)
+Dim thisTypeLength As Integer = last.Value.Len
+
+If thisTypeLength > maxTypeLength Then
+maxTypeLength = thisTypeLength
+End If
+
 ElseIf measureNext Then
 thisVariableLength = thisVariableLength + tok.Value.Len
 
@@ -723,6 +736,11 @@ Dim lastTok As Token = Tokens(i - 1)
 lastTok.PadLengthAfter = maxVariableLength - tok.PadLengthAfter
 
 tok.PadLengthAfter = 0
+
+ElseIf tok.Type = Token.Special And tok.Value = "=" And AlignEqual Then
+Dim lastTok As Token = Tokens(i - 1)
+
+lastTok.PadLengthAfter = maxTypeLength - lastTok.Value.Len
 End If
 Next
 
@@ -786,6 +804,9 @@ End If
 ElseIf tok.Value = ")" And nextTok.Value.Left(1) = "." Then
 ' Do nothing
 
+ElseIf tok.Type = Token.Special And tok.Value = "." Then
+' Do nothing
+
 ElseIf tok.Type = Token.Special And nextTok.Value = "(" Then
 If Not PadOperators Then
 ' Do Nothing
@@ -799,6 +820,9 @@ ElseIf nextTok.Type = Token.Newline Then
 ElseIf nextTok.Value = "," Then
 ' Do nothing
 
+ElseIf nextTok.Value = "." Then
+' Do nothing
+
 ElseIf nextTok.Value = "(" Then
 If tok.Type = Token.Keyword Or PadParensOuter Then
 AddSpace
@@ -807,9 +831,7 @@ Else
 End If
 
 ElseIf nextTok.Value = ")" Then
-' Do nothing
-
-If PadParensInner Then
+If PadParensInner And tok.Value <> "(" Then
 AddSpace
 End If
 
@@ -840,6 +862,12 @@ End Class
 '
 
 Sub Main()
+If AlignEqual And Not AlignAs Then
+Print "AlignEqual does not yet work without AlignAs also, please update your settings"
+
+Return
+End If
+
 Dim code As String
 
 ' If the editor as text selected, assume the user wants to format only the
@@ -857,6 +885,7 @@ Dim writer As New StringWriter
 
 If tokenize.Tokenize(code) = False Then
 Call ShowDialog("Error", "Could not convert the code into a valid stream of tokens", "OK")
+
 Return
 End If
 
@@ -869,8 +898,10 @@ result = result + EndOfLine + "' (this output is here because DoDebug is set to 
 result = result + EndOfLine + EndOfLine + writer.DebugString
 End If
 
-If StrComp(result.Trim, code.Trim, 0) <> 0 Then // Make sure something has changed
-
+'
+' Make sure something has changed before updating the text editor
+'
+If StrComp(result.Trim, code.Trim, 0) <> 0 Then
 ' Save the cursor position (simple, doesn't always restore the position contextually)
 ' as formatting could have changed enough to make your old cursor position no longer
 ' the same as the new with the same index.
