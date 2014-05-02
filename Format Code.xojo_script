@@ -37,6 +37,9 @@ Dim PadComma As Boolean = True
 ' Align 'As' keywords
 Dim AlignAs As Boolean = False
 
+' Align '=' assignments
+Dim AlignEqual As Boolean = False
+
 ' Appends debug information to the end of the editor. This should be
 ' set to true only for those working on Code Formatter.
 Dim DoDebug As Boolean = False
@@ -193,6 +196,7 @@ PadParensOuter = BooleanConstantValue("PadParensOuter", PadParensOuter)
 PadOperators = BooleanConstantValue("PadOperators", PadOperators)
 PadComma = BooleanConstantValue("PadComma", PadComma)
 AlignAs = BooleanConstantValue("AlignAs", AlignAs)
+AlignEqual = BooleanConstantValue("AlignEqual", AlignEqual)
 KeywordsToTitleCase = ArrayConstantValue("KeywordsToTitleCase", KeywordsToTitleCase)
 KeywordsToUpperCase = ArrayConstantValue("KeywordsToUpperCase", KeywordsToUpperCase)
 KeywordsToLowerCase = ArrayConstantValue("KeywordsToLowerCase", KeywordsToLowerCase)
@@ -661,11 +665,9 @@ Next
 
 If blockBegin > -1 And blockBegin <> blockEnd Then
 For i As Integer = blockEnd To Tokens.UBound
-Dim tok As Token = Tokens(i)
-
-If tok.Type = Token.Keyword And tok.Value = "As" Then
 blockEnd = i
 
+If Tokens(i).Type = Token.NewLine Then
 Exit
 End If
 Next
@@ -677,7 +679,7 @@ Return False
 End Function
 
 Private Sub AlignAsStatements()
-If AlignAs = False Then
+If AlignAs = False And AlignEqual = False Then
 Return
 End If
 
@@ -688,6 +690,7 @@ Dim blockEnd As Integer
 While AlignAsFindBlock(start, blockBegin, blockEnd)
 Dim maxVariableLength As Integer
 Dim thisVariableLength As Integer
+Dim maxTypeLength As Integer
 Dim measureNext As Boolean
 
 For i As Integer = blockBegin To blockEnd
@@ -707,6 +710,14 @@ End If
 
 tok.PadLengthAfter = thisVariableLength
 
+ElseIf tok.Type = Token.Special And tok.Value = "=" Then
+Dim last As Token = Tokens(i - 1)
+Dim thisTypeLength As Integer = last.Value.Len
+
+If thisTypeLength > maxTypeLength Then
+maxTypeLength = thisTypeLength
+End If
+
 ElseIf measureNext Then
 thisVariableLength = thisVariableLength + tok.Value.Len
 
@@ -725,6 +736,11 @@ Dim lastTok As Token = Tokens(i - 1)
 lastTok.PadLengthAfter = maxVariableLength - tok.PadLengthAfter
 
 tok.PadLengthAfter = 0
+
+ElseIf tok.Type = Token.Special And tok.Value = "=" And AlignEqual Then
+Dim lastTok As Token = Tokens(i - 1)
+
+lastTok.PadLengthAfter = maxTypeLength - lastTok.Value.Len
 End If
 Next
 
@@ -846,6 +862,12 @@ End Class
 '
 
 Sub Main()
+If AlignEqual And Not AlignAs Then
+Print "AlignEqual does not yet work without AlignAs also, please update your settings"
+
+Return
+End If
+
 Dim code As String
 
 ' If the editor as text selected, assume the user wants to format only the
