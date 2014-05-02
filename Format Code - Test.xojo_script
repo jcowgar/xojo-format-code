@@ -81,6 +81,10 @@ Sub AlignAs(Assigns value As Boolean)
 ConstantValue(preferencesModuleName + ".AlignAs") = If(value, "Yes", "No")
 End Sub
 
+Sub AlignEqual(Assigns value As Boolean)
+ConstantValue(preferencesModuleName + ".AlignEqual") = If(value, "Yes", "No")
+End Sub
+
 '
 ' Unit Test
 '
@@ -169,6 +173,9 @@ PadParensInner = True
 PadParensOuter = False
 PadComma = True
 PadOperators = True
+
+Test("RaiseEvent Open (    )", "RaiseEvent Open()")
+Test("RaiseEvent Open((18))", "RaiseEvent Open( ( 18 ) )")
 
 Test("while(a)", "While ( a )")
 Test("if(true)then b=if(""a""=a,true,false)","If ( True ) Then b = If( ""a"" = a, True, False )")
@@ -316,6 +323,7 @@ Test("Dim ABc, xYZ As Integer" + EndOfLine + "abc=xyz", _
 ' Alignment
 
 AlignAs = True
+AlignEqual = False
 PadComma = True
 
 Test("Dim a As Integer" + EndOfLine + _
@@ -338,6 +346,13 @@ Test("Dim a As Integer" + EndOfLine + _
 "Hi()" + EndOfLine + _
 "Dim aaaaa As Integer" + EndOfLine + _
 "Dim b     As Integer")
+
+AlignEqual = True
+
+Test("Dim a As Integer = 10" + EndOfLine + _
+"Dim xyz As Int32 = 5", _
+"Dim a   As Integer = 10" + EndOfLine + _
+"Dim xyz As Int32   = 5")
 
 PadComma = False
 
@@ -364,6 +379,7 @@ PadParensOuter = False
 PadOperators = True
 PadComma = True
 AlignAs = False
+AlignEqual = False
 KeywordsToTitleCase = ""
 KeywordsToUpperCase = ""
 KeywordsToLowerCase = ""

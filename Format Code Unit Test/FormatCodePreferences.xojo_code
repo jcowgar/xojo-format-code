@@ -6,6 +6,9 @@ Protected Module FormatCodePreferences
 	#tag Constant, Name = AlignAs, Type = String, Dynamic = False, Default = \"No", Scope = Public
 	#tag EndConstant
 
+	#tag Constant, Name = AlignEqual, Type = String, Dynamic = False, Default = \"No", Scope = Public
+	#tag EndConstant
+
 	#tag Constant, Name = CaseConversion, Type = String, Dynamic = False, Default = \"1", Scope = Public
 	#tag EndConstant
 
