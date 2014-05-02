@@ -97,7 +97,7 @@ Dim actual As String
 testIndex = testIndex + 1
 
 Text = bad
-RunScript "Format Code.xojo_script"
+RunScript "Format Code Script.xojo_script"
 actual = Text
 
 ' Remove the debug info if it's there
