@@ -134,25 +134,25 @@ End Function
 
 Function ArrayConstantValue(key As String, defaultValue() As String) As String()
 Dim value As String = ConstantValue(key).Trim
+
 If value = "" Then
 Return defaultValue
+
 Else
 value = value.ReplaceAll(EndOfLine, ",")
 
-Dim arr() As String
-arr = Split(value, ",")
+Dim arr() As String = Split(value, ",")
 
 ' Make sure each value is free of surrounding spaces
-Dim i As Integer
-For i = 0 To arr.Ubound
+For i As Integer = 0 To arr.Ubound
 arr(i) = arr(i).Trim
 Next i
 
 ' Remove any blank items
-For i = arr.Ubound DownTo 0
-if arr(i) = "" then
+For i As Integer = arr.Ubound DownTo 0
+If arr(i) = "" Then
 arr.Remove i
-end if
+End If
 Next i
 
 Return arr()
@@ -161,15 +161,15 @@ End Function
 
 Function MergeArrays(arr1() As String, arr2() As String) As String()
 Dim result() As String
-ReDim result(arr1.Ubound + arr2.Ubound + 1)
 Dim resultIndex As Integer = -1
+ReDim result(arr1.Ubound + arr2.Ubound + 1)
 
-Dim i As Integer
-For i = 0 to arr1.Ubound
+For i As Integer = 0 To arr1.Ubound
 resultIndex = resultIndex + 1
 result(resultIndex) = arr1(i)
 Next i
-For i = 0 to arr2.Ubound
+
+For i As Integer = 0 To arr2.Ubound
 resultIndex = resultIndex + 1
 result(resultIndex) = arr2(i)
 Next i
@@ -207,8 +207,7 @@ Redim AdditionalKeywords(-1) ' We don't need this anymore
 ' Code Formatting Code
 '
 
-Dim SpecialCharacters() As String
-SpecialCharacters = Array("<", ">", "<>", ">=", "<=", "=", "+", "-", "*", "/", _
+Dim SpecialCharacters() As String = Array("<", ">", "<>", ">=", "<=", "=", "+", "-", "*", "/", _
 "^", "(", ")", ",", ":", ".")
 
 '
@@ -254,7 +253,7 @@ Return (value.Left(1) = "'" Or value.Left(2) = "//")
 End Function
 
 Function FirstLetterCap(value As String) As String
-Return value.Left( 1 ).Uppercase + value.Mid( 2 )
+Return value.Left(1).Uppercase + value.Mid(2)
 End Function
 
 Function CaseConvert(value As String, thisCaseConversion As Integer) As String
@@ -267,8 +266,10 @@ Return Lowercase(value)
 
 Case kUpperCase ' UPPER CASE
 Return Uppercase(value)
+
 Else
 Print "Something went wrong with capitalizing!"
+
 Return value
 End Select
 End Function
@@ -330,9 +331,11 @@ Type = Keyword
 Else
 Type = Identifier
 End If
+
 Else
 Type = Identifier
 End If
+
 Else
 Value = v
 
@@ -379,6 +382,7 @@ Return
 End If
 
 Dim code As String = Trim(Code.Mid(mTokenStartPosition, mCurrentPosition - mTokenStartPosition))
+
 If code <> "" Then
 Dim keepCase As Boolean
 
@@ -432,6 +436,7 @@ End Sub
 
 Sub AddCommentToken()
 Dim eol As Integer = InStr(mCurrentPosition, Code, EndOfLine)
+
 If eol = 0 Then
 eol = CodeLength + 1
 End If
@@ -559,11 +564,13 @@ Case "/"
 ' two forward slash tokens.
 If nextCh = "/" Then
 MaybeAddToken(False)
+
 AddCommentToken
 
 Else
 ' Must have been division
 MaybeAddToken
+
 AddToken("/")
 End If
 
@@ -578,14 +585,12 @@ AddToken(ch + nextCh)
 
 Else
 AddToken(ch)
-
 End if
 
 Case "."
 MaybeAddToken
 
 AddToken(ch)
-
 End Select
 End If
 
@@ -657,8 +662,10 @@ Next
 If blockBegin > -1 And blockBegin <> blockEnd Then
 For i As Integer = blockEnd To Tokens.UBound
 Dim tok As Token = Tokens(i)
+
 If tok.Type = Token.Keyword And tok.Value = "As" Then
 blockEnd = i
+
 Exit
 End If
 Next
@@ -808,8 +815,6 @@ Else
 End If
 
 ElseIf nextTok.Value = ")" Then
-' Do nothing
-
 If PadParensInner And tok.Value <> "(" Then
 AddSpace
 End If
@@ -858,6 +863,7 @@ Dim writer As New StringWriter
 
 If tokenize.Tokenize(code) = False Then
 Call ShowDialog("Error", "Could not convert the code into a valid stream of tokens", "OK")
+
 Return
 End If
 
@@ -870,8 +876,10 @@ result = result + EndOfLine + "' (this output is here because DoDebug is set to 
 result = result + EndOfLine + EndOfLine + writer.DebugString
 End If
 
-If StrComp(result.Trim, code.Trim, 0) <> 0 Then // Make sure something has changed
-
+'
+' Make sure something has changed before updating the text editor
+'
+If StrComp(result.Trim, code.Trim, 0) <> 0 Then
 ' Save the cursor position (simple, doesn't always restore the position contextually)
 ' as formatting could have changed enough to make your old cursor position no longer
 ' the same as the new with the same index.
