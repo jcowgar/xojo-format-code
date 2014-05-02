@@ -120,7 +120,7 @@ Dim KeepCaseIdentifiers() As String
 Const preferencesModuleName = "FormatCodePreferences"
 
 Function BooleanConstantValue(key As String, defaultValue As Boolean) As Boolean
-Select Case ConstantValue(key)
+Select Case ConstantValue(preferencesModuleName + "." + key)
 Case "1", "Yes", "True"
 Return True
 
@@ -133,7 +133,7 @@ End Select
 End Function
 
 Function ArrayConstantValue(key As String, defaultValue() As String) As String()
-Dim value As String = ConstantValue(key).Trim
+Dim value As String = ConstantValue(preferencesModuleName + "." + key).Trim
 
 If value = "" Then
 Return defaultValue
@@ -188,18 +188,18 @@ Case "kUpperCase", Str(kUpperCase)
 CaseConversion = kUpperCase
 End Select
 
-PadParensInner = BooleanConstantValue(preferencesModuleName + ".PadParensInner", PadParensInner)
-PadParensOuter = BooleanConstantValue(preferencesModuleName + ".PadParensOuter", PadParensOuter)
-PadOperators = BooleanConstantValue(preferencesModuleName + ".PadOperators", PadOperators)
-PadComma = BooleanConstantValue(preferencesModuleName + ".PadComma", PadComma)
-AlignAs = BooleanConstantValue(preferencesModuleName + ".AlignAs", AlignAs)
-KeywordsToTitleCase = ArrayConstantValue(preferencesModuleName + ".KeywordsToTitleCase", KeywordsToTitleCase)
-KeywordsToUpperCase = ArrayConstantValue(preferencesModuleName + ".KeywordsToUpperCase", KeywordsToUpperCase)
-KeywordsToLowerCase = ArrayConstantValue(preferencesModuleName + ".KeywordsToLowerCase", KeywordsToLowerCase)
+PadParensInner = BooleanConstantValue("PadParensInner", PadParensInner)
+PadParensOuter = BooleanConstantValue("PadParensOuter", PadParensOuter)
+PadOperators = BooleanConstantValue("PadOperators", PadOperators)
+PadComma = BooleanConstantValue("PadComma", PadComma)
+AlignAs = BooleanConstantValue("AlignAs", AlignAs)
+KeywordsToTitleCase = ArrayConstantValue("KeywordsToTitleCase", KeywordsToTitleCase)
+KeywordsToUpperCase = ArrayConstantValue("KeywordsToUpperCase", KeywordsToUpperCase)
+KeywordsToLowerCase = ArrayConstantValue("KeywordsToLowerCase", KeywordsToLowerCase)
 
 ' Grab any additional, user-defined keywords from the module. These will be added to the list above.
 Dim AdditionalKeywords() As String
-AdditionalKeywords = ArrayConstantValue(preferencesModuleName + ".AdditionalKeywords", AdditionalKeywords)
+AdditionalKeywords = ArrayConstantValue("AdditionalKeywords", AdditionalKeywords)
 KeywordsToCapitalize = MergeArrays(KeywordsToCapitalize, AdditionalKeywords)
 Redim AdditionalKeywords(-1) ' We don't need this anymore
 
