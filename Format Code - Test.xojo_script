@@ -170,6 +170,9 @@ PadParensOuter = False
 PadComma = True
 PadOperators = True
 
+Test("RaiseEvent Open (    )", "RaiseEvent Open()")
+Test("RaiseEvent Open((18))", "RaiseEvent Open( ( 18 ) )")
+
 Test("while(a)", "While ( a )")
 Test("if(true)then b=if(""a""=a,true,false)","If ( True ) Then b = If( ""a"" = a, True, False )")
 Test("Add(10,20)", "Add( 10, 20 )")

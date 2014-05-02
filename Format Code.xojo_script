@@ -810,7 +810,7 @@ End If
 ElseIf nextTok.Value = ")" Then
 ' Do nothing
 
-If PadParensInner Then
+If PadParensInner And tok.Value <> "(" Then
 AddSpace
 End If
 
