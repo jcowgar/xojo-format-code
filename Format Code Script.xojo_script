@@ -50,7 +50,7 @@ Dim KeywordsToCapitalize() As String
 ' keywords and pragmas are listed
 KeywordsToCapitalize = Array("AddHandler", "AddressOf", "Array", "As", "Assigns", _
 "Break", "ByRef", "ByVal", "CType", "Call", "Case", "Catch", "Const", "Continue", _
-"Declare", "Dim", "Do", "Loop", "DownTo", "Each", "Else", "End", "Enum", "Exception", _
+"Declare", "Dim", "Do", "Loop", "DownTo", "Each", "Else", "ElseIf", "End", "Enum", "Exception", _
 "Exit", "Extends", "False", "Finally", "For", "Not", "Next", "Function", "GOTO", "GetTypeInfo", _
 "If", "Then", "In", "Is", "IsA", "Lib", "Loop", "Me", "New", "Nil", "Optional", "ParamArray", _
 "Raise", "RaiseEvent", "Redim", "Rem", "RemoveHandler", "Return", "Select", "Self", _
