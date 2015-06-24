@@ -48,7 +48,7 @@ Dim KeywordsToCapitalize() As String
 
 ' Keywords that you want Code Formatter to correct the case on. By default, all
 ' keywords and pragmas are listed
-KeywordsToCapitalize = Array("AddHandler", "AddressOf", "Array", "As", "Assigns", _
+KeywordsToCapitalize = Array("AddHandler", "AddressOf", "And", "Array", "As", "Assigns", _
 "Break", "ByRef", "ByVal", "CType", "Call", "Case", "Catch", "Const", "Continue", _
 "Declare", "Dim", "Do", "Loop", "DownTo", "Each", "Else", "ElseIf", "End", "Enum", "Exception", _
 "Exit", "Extends", "False", "Finally", "For", "Not", "Next", "Function", "GOTO", "GetTypeInfo", _
