@@ -89,6 +89,14 @@ Sub DoDebug(Assigns value As Boolean)
 ConstantValue(preferencesModuleName + ".DoDebug") = If(value, "Yes", "No")
 End Sub
 
+Function ReplaceLineEndings(sourceString As String, lineEnding As String) As String
+sourceString = sourceString.ReplaceAll(Chr(13) + Chr(10), Chr(10))
+sourceString = sourceString.ReplaceAll(Chr(13), Chr(10))
+sourceString = sourceString.ReplaceAll(Chr(10), lineEnding)
+
+return sourceString
+End Function
+
 '
 ' Unit Test
 '
@@ -100,9 +108,11 @@ Dim actualWithDebug As String
 
 testIndex = testIndex + 1
 
+expected = ReplaceLineEndings(expected, EndOfLine)
+
 Text = bad
 RunScript "Format Code Script.xojo_script"
-actualWithDebug = Text
+actualWithDebug = ReplaceLineEndings(Text, EndOfLine)
 
 ' Remove the debug info 
 dim actual As String = actualWithDebug
@@ -152,6 +162,7 @@ print msg
 Return
 Else
 passCount = 0
+testIndex = 0
 End If
 
 ' =================================================================
@@ -182,8 +193,8 @@ Test("a=10// comment" + EndOfLine + "b=20", _
 "a = 10 // comment" + EndOfLine + "b = 20")
 
 ' Comments should work on the first line (above cases) and subsequent lines
-Test("a=10" + EndOfLine + "// comment?" + EndOfLine + "b=20", _
-"a = 10" + EndOfLine + "// comment?" + EndOfLine + "b = 20")
+Test("a=15" + EndOfLine + "// comment?" + EndOfLine + "b=20", _
+"a = 15" + EndOfLine + "// comment?" + EndOfLine + "b = 20")
 
 ' Comments should have leading space removed
 Test("a=10      // Hi", "a = 10 // Hi")

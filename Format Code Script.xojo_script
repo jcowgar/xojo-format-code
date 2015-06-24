@@ -180,6 +180,13 @@ Next i
 Return result()
 End Function
 
+Function ReplaceLineEndings(sourceString As String) As String
+sourceString = sourceString.ReplaceAll(Chr(13) + Chr(10), Chr(10))
+sourceString = sourceString.ReplaceAll(Chr(13), Chr(10))
+
+return sourceString
+End Function
+
 Select Case ConstantValue(preferencesModuleName + ".CaseConversion")
 Case "kTitleCase", Str(kTitleCase)
 CaseConversion = kTitleCase
@@ -344,7 +351,7 @@ End If
 Else
 Value = v
 
-If Value = EndOfLine Then
+If Value = Chr(10) Then
 Type = NewLine
 
 ElseIf IsASpecial(Value) Then
@@ -440,7 +447,7 @@ mStartOfLine = False
 End Sub
 
 Sub AddCommentToken()
-Dim eol As Integer = InStr(mCurrentPosition, Code, EndOfLine)
+Dim eol As Integer = InStr(mCurrentPosition, Code, Chr(10))
 
 If eol = 0 Then
 eol = CodeLength + 1
@@ -537,7 +544,7 @@ MaybeAddToken
 
 AddToken(ch)
 
-Case EndOfLine
+Case Chr(10)
 MaybeAddToken
 
 AddToken(ch)
@@ -552,7 +559,7 @@ Case "_"
 ' Only process the _ character as an individual token if it is the start of a token
 ' and it is followed by a space, EndOfLine or comment character
 If mCurrentPosition = mTokenStartPosition And _
-(nextCh = EndOfLine Or nextCh = " " Or nextCh = "'" Or _
+(nextCh = Chr(10) Or nextCh = " " Or nextCh = "'" Or _
 (nextCh = "/" And nextNextCh = "/")) Then
 encounteredUnderscore = True
 MaybeAddToken
@@ -629,7 +636,7 @@ mResult = mResult + value
 End Sub
 
 Private Sub AddEndOfLine()
-mResult = mResult + EndOfLine
+mResult = mResult + Chr(10)
 mColumn = 0
 mRow = mRow + 1
 End Sub
@@ -772,11 +779,11 @@ End If
 
 If DoDebug Then
 DebugString = DebugString + "' Token: '" + tok.Value.Trim + "', Type: " + Str(tok.Type) + ", " + _
-"Start: " + Str(tok.StartIndex) + ", Length: " + Str(tok.Length) + EndOfLine
+"Start: " + Str(tok.StartIndex) + ", Length: " + Str(tok.Length) + Chr(10)
 End If
 
 Select Case tok.Value
-Case EndOfLine
+Case Chr(10)
 AddEndOfLine
 
 Else
@@ -880,6 +887,8 @@ code = SelText
 Else
 code = Text
 End If
+
+code = ReplaceLineEndings(code)
 
 Dim tokenize As New Tokenizer
 Dim writer As New StringWriter
