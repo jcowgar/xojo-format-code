@@ -138,6 +138,20 @@ DoCommand "NewMethod"
 
 DoDebug = True
 
+'
+' Initial test to make sure the script is installed
+'
+
+Test("if", "If")
+If passCount <> 1 Then
+Dim msg As String = "The Format Code script may not be in your Scripts menu, or something else has gone wrong."
+Text = "//" + EndOfLine + "// " + msg + EndOfLine + "//"
+print msg
+Return
+Else
+passCount = 0
+End If
+
 ' =================================================================
 ' =
 ' =                         TESTS
