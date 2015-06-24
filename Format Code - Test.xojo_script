@@ -138,6 +138,22 @@ DoCommand "NewMethod"
 
 DoDebug = True
 
+'
+' Initial test to make sure the script is installed
+'
+
+Test("if", "If")
+If passCount <> 1 Then
+Dim msg As String = _
+"The Format Code Script may not be installed, or something else has gone wrong. " + _
+"Consult the project README file for installation information."
+Text = "//" + EndOfLine + "// " + msg + EndOfLine + "//"
+print msg
+Return
+Else
+passCount = 0
+End If
+
 ' =================================================================
 ' =
 ' =                         TESTS
