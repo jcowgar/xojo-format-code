@@ -398,6 +398,10 @@ Test("Dim abcXYZ As Integer = 12" + EndOfLine + _
 Test("Dim ABc, xYZ As Integer" + EndOfLine + "abc=xyz", _
 "Dim ABc, xYZ As Integer" + EndOfLine + "ABc = xYZ")
 
+Test("dim abC as text", "Dim abC As Text")
+
+Test("using Xojo.Core", "Using Xojo.Core")
+
 // Alignment
 
 AlignAs = True
