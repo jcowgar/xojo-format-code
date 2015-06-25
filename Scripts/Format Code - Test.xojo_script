@@ -1,33 +1,33 @@
-'
-' Our testing is done by first opening the Format Code Unit Test project.
-' This contains a module named "FormatCodePreferences" which allows us to
-' change various settings from the test script.
-'
-' We then, from the test script, create a new module and a new method in
-' that module. That method's text area is where the test script will work.
-'
-' Each call to Test(input, expected) will:
-'     1. Set the Text of the editor to `input`
-'     2. Call the 'Format Code' Xojo Script
-'     3. Compare the Text of the editor to the `expected` value
-'
-' If the newly formatted Text is equal (case sensitive) to the `expected`
-' value then our test has passed, otherwise it has failed.
-'
-' The Test method keeps track of how many tests have passed, how many have
-' failed as well as the input, expected and actual output for those tests
-' that failed.
-'
-' When all the tests are done running, the content of the editor is set to
-' an output string containing testing statistics as well as details on any
-' failed tests.
-'
-' To add new tests, simply call:
-'     Test("non-formatted-input", "expected-formatted-output")
-'
-' Be sure to set any specific options you may need/want for your test
-' prior to calling Test.
-'
+//
+// Our testing is done by first opening the Format Code Unit Test project.
+// This contains a module named "FormatCodePreferences" which allows us to
+// change various settings from the test script.
+//
+// We then, from the test script, create a new module and a new method in
+// that module. That method's text area is where the test script will work.
+//
+// Each call to Test(input, expected) will:
+//     1. Set the Text of the editor to `input`
+//     2. Call the 'Format Code' Xojo Script
+//     3. Compare the Text of the editor to the `expected` value
+//
+// If the newly formatted Text is equal (case sensitive) to the `expected`
+// value then our test has passed, otherwise it has failed.
+//
+// The Test method keeps track of how many tests have passed, how many have
+// failed as well as the input, expected and actual output for those tests
+// that failed.
+//
+// When all the tests are done running, the content of the editor is set to
+// an output string containing testing statistics as well as details on any
+// failed tests.
+//
+// To add new tests, simply call:
+//     Test("non-formatted-input", "expected-formatted-output")
+//
+// Be sure to set any specific options you may need/want for your test
+// prior to calling Test.
+//
 
 Const kVersion = "2015r1"
 Const kScriptName = "Format Code.xojo_script"
@@ -49,9 +49,9 @@ Const kVersionMagic = "$FormatCodeVersion$"
 Dim testIndex, passCount, failCount As Integer
 Dim results() As String
 
-'
-' Quick methods to change preferences
-'
+//
+// Quick methods to change preferences
+//
 
 Sub CaseConversion(Assigns value As Integer)
 ConstantValue(preferencesModuleName + ".CaseConversion") = Str(value)
@@ -109,9 +109,9 @@ sourceString = sourceString.ReplaceAll(Chr(10), lineEnding)
 return sourceString
 End Function
 
-'
-' Unit Test
-'
+//
+// Unit Test
+//
 
 Sub Test(bad As String, expected As String)
 Const kDebugOutputIdentifier = "' ==== Format Code Script Debug Information ===="
@@ -126,7 +126,7 @@ Text = bad
 RunScript kScriptName
 actualWithDebug = ReplaceLineEndings(Text, EndOfLine)
 
-' Remove the debug info 
+// Remove the debug info 
 dim actual As String = actualWithDebug
 Dim pos As Integer = actual.InStr(kDebugOutputIdentifier)
 If pos <> 0 Then
@@ -150,10 +150,10 @@ passCount = passCount + 1
 End If
 End Sub
 
-'
-' Start a new console project and add a new method, this is where
-' we will actually do our testing.
-'
+//
+// Start a new console project and add a new method, this is where
+// we will actually do our testing.
+//
 
 DoCommand "NewModule"
 DoCommand "NewMethod"
@@ -204,11 +204,11 @@ Text = _
 return
 end select
 
-' =================================================================
-' =
-' =                         TESTS
-' =
-' =================================================================
+// =================================================================
+// =
+// =                         TESTS
+// =
+// =================================================================
 
 Print "Warning" + EndOfLine + EndOfLine + _
 "Unit testing may take 30-90 seconds and during this time Xojo may" + _
@@ -220,30 +220,30 @@ Test("apples -= 10", "apples = apples - 10")
 Test("apples *= 10", "apples = apples * 10")
 Test("apples /= 10", "apples = apples / 10")
 
-' Number parsing
+// Number parsing
 Test("a=10+5", "a = 10 + 5")
 Test("a=-10+5", "a = -10 + 5")
 Test("a=-10.5+5", "a = -10.5 + 5")
 
-'
-' Comment parsing
-'
+//
+// Comment parsing
+//
 Test("a=10' Assign 10 to A", "a = 10 ' Assign 10 to A")
 Test("a=10// Assign 10 to A", "a = 10 // Assign 10 to A")
 Test("a=10+5// comment", "a = 10 + 5 // comment")
 
-' Comments should be read until the end of a line
+// Comments should be read until the end of a line
 Test("a=10// comment" + EndOfLine + "b=20", _
 "a = 10 // comment" + EndOfLine + "b = 20")
 
-' Comments should work on the first line (above cases) and subsequent lines
+// Comments should work on the first line (above cases) and subsequent lines
 Test("a=15" + EndOfLine + "// comment?" + EndOfLine + "b=20", _
 "a = 15" + EndOfLine + "// comment?" + EndOfLine + "b = 20")
 
-' Comments should have leading space removed
+// Comments should have leading space removed
 Test("a=10      // Hi", "a = 10 // Hi")
 
-' Keywords shouldn't be parsed in a comment
+// Keywords shouldn't be parsed in a comment
 Test("' if a isa b THEN", "' if a isa b THEN")
 Test("// if a isa b THEN", "// if a isa b THEN")
 
@@ -297,7 +297,7 @@ PadComma = False
 Test("a = 5  + 12", "a=5+12")
 Test("Add(5, 12)", "Add(5,12)")
 
-' me, self and super should all adhere to case conversion
+// me, self and super should all adhere to case conversion
 Test("me.hello()", "Me.hello()")
 Test("self.hello()", "Self.hello()")
 Test("super.hello()", "Super.hello()")
@@ -316,33 +316,33 @@ Test("iF tRUE thEN", "IF TRUE THEN")
 
 CaseConversion = kTitleCase
 
-' Strings shouldn't be messed with
+// Strings shouldn't be messed with
 Test("""if TrUe ThEn""", """if TrUe ThEn""")
 
-' Test to make sure combination operators are properly output as one unit
+// Test to make sure combination operators are properly output as one unit
 PadOperators = True
 Test("8>=20 And 8<=99 And 8<>9", "8 >= 20 And 8 <= 99 And 8 <> 9")
 
-' Padding around the pair operator
+// Padding around the pair operator
 Test("1:2", "1 : 2")
 
-' Continuation character properly formatted
+// Continuation character properly formatted
 Test("a=10+ _", "a = 10 + _")
 Test("a=10+ _' Hi", "a = 10 + _ ' Hi")
 
-' Reset things to the standard
+// Reset things to the standard
 PadParensOuter = False
 PadParensInner = False
 PadComma = True
 PadOperators = True
 
-' Line continuation character with IF and comment
+// Line continuation character with IF and comment
 Test("if(true) _'Comment" + EndOfLine + "if(true,true,false)then", "If (True) _ 'Comment" + EndOfLine + "If(True, True, False) Then")
 Test("if(true) _ 'Comment" + EndOfLine + "if(true,true,false)then", "If (True) _ 'Comment" + EndOfLine + "If(True, True, False) Then")
 Test("if(true) _//Comment" + EndOfLine + "if(true,true,false)then", "If (True) _ //Comment" + EndOfLine + "If(True, True, False) Then")
 Test("if(true) _ //Comment" + EndOfLine + "if(true,true,false)then", "If (True) _ //Comment" + EndOfLine + "If(True, True, False) Then")
 
-' Optional keywords with specific conversion types
+// Optional keywords with specific conversion types
 KeywordsToTitleCase = "SayHello,SayGoodBye,Val"
 KeywordsToUpperCase = "ABC,DEF"
 KeywordsToLowerCase = "xyz,www"
@@ -353,20 +353,20 @@ Test("abc=XYZ", "ABC = xyz")
 Test("def=abc", "DEF = ABC")
 Test("mail=good", "mail = good")
 
-' Reset things to the standard
+// Reset things to the standard
 PadParensOuter = False
 PadParensInner = False
 PadComma = True
 PadOperators = True
 
-' Optional keywords with specific conversion types
+// Optional keywords with specific conversion types
 KeywordsToTitleCase = "SayHello,SayGoodBye,Val"
 KeywordsToUpperCase = "ABC,DEF"
 KeywordsToLowerCase = "xyz,www"
 
 Test("ABC=val(""8374 abc XYZ saYHEllo"")", "ABC = Val(""8374 abc XYZ saYHEllo"")")
 
-' Additional Keywords with default case conversion
+// Additional Keywords with default case conversion
 AdditionalKeywords = "GetName,GetAddress"
 
 CaseConversion = kTitleCase
@@ -381,7 +381,7 @@ CaseConversion = kUpperCase
 Test("GetName(10)", "GETNAME(10)")
 Test("GETADDRESS(30)", "GETADDRESS(30)")
 
-' KeepCase tests
+// KeepCase tests
 KeywordsToTitleCase = ""
 KeywordsToUpperCase = ""
 KeywordsToLowerCase = ""
@@ -398,7 +398,7 @@ Test("Dim abcXYZ As Integer = 12" + EndOfLine + _
 Test("Dim ABc, xYZ As Integer" + EndOfLine + "abc=xyz", _
 "Dim ABc, xYZ As Integer" + EndOfLine + "ABc = xYZ")
 
-' Alignment
+// Alignment
 
 AlignAs = True
 AlignEqual = False
@@ -439,25 +439,25 @@ Test("Dim a,   b As  Integer" + EndOfLine + _
 "Dim a,b        As Integer" + EndOfLine + _
 "Dim helloWorld As Integer")
 
-'
-' Intentional fail to test debug output in this script.
-' Normally this line would be commented out.
-'
+//
+// Intentional fail to test debug output in this script.
+// Normally this line would be commented out.
+//
 
 'Test( "RaiseEvent Open( )", "RaiseEvent Open( )") ' Not really what we'd expect
 
-' =================================================================
-' =
-' =                    Display the results
-' =
-' =================================================================
+// =================================================================
+// =
+// =                    Display the results
+// =
+// =================================================================
 
 Text = Join(results, EndOfLine) + EndOfLine + EndOfLine + _
 "' ---------------------------------------------------------------------" + EndOfLine + _
 "' " + Str(passCount) + " test(s) passed, " + Str(failCount) + " test(s) failed"
 
-' Reset our preferences so that each time we run a test and then commit
-' to our SCM system, the test project hasn't changed.
+// Reset our preferences so that each time we run a test and then commit
+// to our SCM system, the test project hasn't changed.
 CaseConversion = kTitleCase
 PadParensInner = False
 PadParensOuter = False

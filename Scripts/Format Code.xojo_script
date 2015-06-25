@@ -1,11 +1,11 @@
-'
-' Format Xojo code in the currently opened method
-'
-' Author: Jeremy Cowgar <jeremy@cowgar.com>
-'
-' Contributors: 
-'   * Kem Tekinay <ktekinay@mactechnologies.com>
-' 
+//
+// Format Xojo code in the currently opened method
+//
+// Author: Jeremy Cowgar <jeremy@cowgar.com>
+//
+// Contributors: 
+//   * Kem Tekinay <ktekinay@mactechnologies.com>
+// 
 
 Const kVersion = "2015r1"
 
@@ -13,41 +13,41 @@ Const kTitleCase = 1
 Const kLowerCase = 2
 Const kUpperCase = 3
 
-'
-'
-' User Preferences:
-'
-'
+//
+//
+// User Preferences:
+//
+//
 
-' Convert badly formatted "byREF" into ByRef (kTitleCase), byref (kLowerCase) or BYREF (kUpperCase)
+// Convert badly formatted "byREF" into ByRef (kTitleCase), byref (kLowerCase) or BYREF (kUpperCase)
 Dim CaseConversion As Integer = kTitleCase
 
-' Pad inside parens with a space?
+// Pad inside parens with a space?
 Dim PadParensInner As Boolean = False
 
-' Pad outside parens with space?
+// Pad outside parens with space?
 Dim PadParensOuter As Boolean = False
 
-' Pad operators with a space?
+// Pad operators with a space?
 Dim PadOperators As Boolean = True
 
-' Pad a comma with a trailing space?
+// Pad a comma with a trailing space?
 Dim PadComma As Boolean = True
 
-' Align 'As' keywords
+// Align 'As' keywords
 Dim AlignAs As Boolean = False
 
-' Align '=' assignments
+// Align '=' assignments
 Dim AlignEqual As Boolean = False
 
-' Appends debug information to the end of the editor. This should be
-' set to true only for those working on Code Formatter.
+// Appends debug information to the end of the editor. This should be
+// set to true only for those working on Code Formatter.
 Dim DoDebug As Boolean = False
 
 Dim KeywordsToCapitalize() As String
 
-' Keywords that you want Code Formatter to correct the case on. By default, all
-' keywords and pragmas are listed
+// Keywords that you want Code Formatter to correct the case on. By default, all
+// keywords and pragmas are listed
 KeywordsToCapitalize = Array("AddHandler", "AddressOf", "And", "Array", "As", "Assigns", _
 "Break", "ByRef", "ByVal", "CType", "Call", "Case", "Catch", "Const", "Continue", _
 "Declare", "Dim", "Do", "Loop", "DownTo", "Each", "Else", "ElseIf", "End", "Enum", "Exception", _
@@ -67,33 +67,33 @@ KeywordsToCapitalize = Array("AddHandler", "AddressOf", "And", "Array", "As", "A
 "Structure", "UInt16", "UInt32", "UInt64", "UInt8", "UShort", "WindowPtr", _
 "WString", "XMLNodeType")
 
-' Set up additional arrays of keywords that should be treated in a special way.
-' Keywords that do not appear in any of these arrays will be treated with the default behavior.
-' Values in any of these arrays will override the default.
-'
-' For example, if you want all of your keywords title cased except for if/then/else,
-' you'd set CaseConversion to kTitleCase and add "if", "then", and "else" to 
-' KeywordsToLowercase. You could also add something like MyClass to KeywordsToTitleCase
-' and it will be replaced too.
-'
-' You can add these to your FormatCodePreferences module.
+// Set up additional arrays of keywords that should be treated in a special way.
+// Keywords that do not appear in any of these arrays will be treated with the default behavior.
+// Values in any of these arrays will override the default.
+//
+// For example, if you want all of your keywords title cased except for if/then/else,
+// you'd set CaseConversion to kTitleCase and add "if", "then", and "else" to 
+// KeywordsToLowercase. You could also add something like MyClass to KeywordsToTitleCase
+// and it will be replaced too.
+//
+// You can add these to your FormatCodePreferences module.
 
 Dim KeywordsToTitleCase() As String 
 Dim KeywordsToUpperCase() As String
 Dim KeywordsToLowerCase() As String
 
-' Fill in your preferences here
+// Fill in your preferences here
 KeywordsToTitleCase = Array("")
 
 KeywordsToUpperCase = Array("")
 
 KeywordsToLowerCase = Array("")
 
-'
-' 
-' END OF USER PREFERENCES
-'
-'
+//
+// 
+// END OF USER PREFERENCES
+//
+//
 
 Dim XojoKeywords() As String = Array("As", "Assigns", "Break", "ByRef", "ByVal", "Call", "Case", _
 "Catch", "Const", "Continue", "Declare", "Dim", "Do", "Loop", "DownTo", "Each", "Else", "End", _
@@ -115,10 +115,10 @@ Dim XojoKeyWordsAsFunction() As String = Array("If")
 
 Dim KeepCaseIdentifiers() As String
 
-'
-' Try to read preferences from a `FormatCode` module in the application. If a success,
-' then those properties override the above settings.
-'
+//
+// Try to read preferences from a `FormatCode` module in the application. If a success,
+// then those properties override the above settings.
+//
 
 Const preferencesModuleName = "FormatCodePreferences"
 
@@ -146,12 +146,12 @@ value = value.ReplaceAll(EndOfLine, ",")
 
 Dim arr() As String = Split(value, ",")
 
-' Make sure each value is free of surrounding spaces
+// Make sure each value is free of surrounding spaces
 For i As Integer = 0 To arr.Ubound
 arr(i) = arr(i).Trim
 Next i
 
-' Remove any blank items
+// Remove any blank items
 For i As Integer = arr.Ubound DownTo 0
 If arr(i) = "" Then
 arr.Remove i
@@ -209,22 +209,22 @@ KeywordsToUpperCase = ArrayConstantValue("KeywordsToUpperCase", KeywordsToUpperC
 KeywordsToLowerCase = ArrayConstantValue("KeywordsToLowerCase", KeywordsToLowerCase)
 DoDebug = BooleanConstantValue("DoDebug", DoDebug)
 
-' Grab any additional, user-defined keywords from the module. These will be added to the list above.
+// Grab any additional, user-defined keywords from the module. These will be added to the list above.
 Dim AdditionalKeywords() As String
 AdditionalKeywords = ArrayConstantValue("AdditionalKeywords", AdditionalKeywords)
 KeywordsToCapitalize = MergeArrays(KeywordsToCapitalize, AdditionalKeywords)
 Redim AdditionalKeywords(-1) ' We don't need this anymore
 
-'
-' Code Formatting Code
-'
+//
+// Code Formatting Code
+//
 
 Dim SpecialCharacters() As String = Array("<", ">", "<>", ">=", "<=", "=", "+", "-", "*", "/", _
 "^", "(", ")", ",", ":", ".")
 
-'
-' Helper functions
-'
+//
+// Helper functions
+//
 
 Function IsASpecial(value As String) As Boolean
 Return (SpecialCharacters.IndexOf(value) > -1)
@@ -239,13 +239,13 @@ Dim chCode As Integer
 chCode = Asc(chars(i))
 
 If i = 0 And (chCode = 43 Or chCode = 45) Then
-' Good
+// Good
 
 ElseIf chCode >= 48 And chCode <= 57 Then
-' Good
+// Good
 
 ElseIf chCode = 46 And hasDecimal = False Then
-' Good
+// Good
 hasDecimal = True
 
 Else
@@ -286,9 +286,9 @@ Return value
 End Select
 End Function
 
-'
-' Represent a single token
-'
+//
+// Represent a single token
+//
 Class Token
 Const Keyword = 1
 Const Identifier = 2
@@ -373,15 +373,15 @@ End If
 End Sub
 End Class
 
-'
-' Convert a string into a stream of tokens.
-'
+//
+// Convert a string into a stream of tokens.
+//
 Class Tokenizer
 Dim Tokens() As Token
 Dim Code As String
 Dim CodeLength As Integer
 
-' Parsing state variables
+// Parsing state variables
 Private mCurrentPosition As Integer
 Private mTokenStartPosition As Integer
 Private mInString As Boolean
@@ -484,7 +484,7 @@ End If
 If mInString Then
 If ch = """" Then
 If nextCh = """" Then
-' Increment past the next quote, it is a double quote
+// Increment past the next quote, it is a double quote
 mCurrentPosition = mCurrentPosition + 1
 
 Else
@@ -503,17 +503,17 @@ Case " "
 MaybeAddToken
 
 Case "-"
-' Could be a plus symbol or a negative number. This detection logic isn't the best...
+// Could be a plus symbol or a negative number. This detection logic isn't the best...
 If Asc(nextCh) < 48 Or Asc(nextCh) > 57 Then
-' Next character is not a number, add this token as a math operation of its own
+// Next character is not a number, add this token as a math operation of its own
 MaybeAddToken
 
 AddToken(ch)
 End If
 
 Case "="
-' Look at the previous tokens, if it was a +, -, * or /, do magic
-' to come up with the expanded version
+// Look at the previous tokens, if it was a +, -, * or /, do magic
+// to come up with the expanded version
 Dim addToken As Boolean = True
 
 If Tokens.UBound >= 1 Then
@@ -524,7 +524,7 @@ Dim expansionOps As String = "+-*/"
 If expansionOps.InStr(oneTokenBack.Value) > 0 Then
 addToken = False
 
-' Delete the previous expansionOp
+// Delete the previous expansionOp
 Tokens.Remove(Tokens.UBound)
 
 AddToken("=")
@@ -556,8 +556,8 @@ mStartOfLine = True
 End If
 
 Case "_"
-' Only process the _ character as an individual token if it is the start of a token
-' and it is followed by a space, EndOfLine or comment character
+// Only process the _ character as an individual token if it is the start of a token
+// and it is followed by a space, EndOfLine or comment character
 If mCurrentPosition = mTokenStartPosition And _
 (nextCh = Chr(10) Or nextCh = " " Or nextCh = "'" Or _
 (nextCh = "/" And nextNextCh = "/")) Then
@@ -572,15 +572,15 @@ MaybeAddToken(False)
 AddCommentToken
 
 Case "/"
-' We could have // which indicates a comment and should be a single token, not
-' two forward slash tokens.
+// We could have // which indicates a comment and should be a single token, not
+// two forward slash tokens.
 If nextCh = "/" Then
 MaybeAddToken(False)
 
 AddCommentToken
 
 Else
-' Must have been division
+// Must have been division
 MaybeAddToken
 
 AddToken("/")
@@ -589,7 +589,7 @@ End If
 Case "<", ">" 
 MaybeAddToken
 
-' We could have <>, >=, <=
+// We could have <>, >=, <=
 If nextCh = ">" Or nextCh = "<" Or nextCh = "=" Then
 mCurrentPosition = mCurrentPosition + 1
 
@@ -615,9 +615,9 @@ Return True
 End Function
 End Class
 
-'
-' StringWriter - Take a stream of tokens and write them to a string
-'
+//
+// StringWriter - Take a stream of tokens and write them to a string
+//
 Class StringWriter
 Dim Tokens() As Token
 Dim DebugString As String
@@ -798,7 +798,7 @@ AddString(" ")
 Next
 End Select
 
-' Add a space between tokens, if necessary
+// Add a space between tokens, if necessary
 If mColumn > 0 Then
 If nextTok <> Nil Then
 If tok.Type = Token.Comment Then
@@ -810,32 +810,32 @@ AddSpace
 End If
 
 ElseIf tok.Value = ")" And nextTok.Value.Left(1) = "." Then
-' Do nothing
+// Do nothing
 
 ElseIf tok.Type = Token.Special And tok.Value = "." Then
-' Do nothing
+// Do nothing
 
 ElseIf tok.Type = Token.Special And nextTok.Value = "(" Then
 If Not PadOperators Then
-' Do Nothing
+// Do Nothing
 ElseIf tok.Value <> "(" Or PadParensInner Then
 AddSpace
 End If
 
 ElseIf nextTok.Type = Token.Newline Then
-' Do nothing
+// Do nothing
 
 ElseIf nextTok.Value = "," Then
-' Do nothing
+// Do nothing
 
 ElseIf nextTok.Value = "." Then
-' Do nothing
+// Do nothing
 
 ElseIf nextTok.Value = "(" Then
 If tok.Type = Token.Keyword Or PadParensOuter Then
 AddSpace
 Else
-' Do nothing
+// Do nothing
 End If
 
 ElseIf nextTok.Value = ")" Then
@@ -844,16 +844,16 @@ AddSpace
 End If
 
 ElseIf tok.Type = Token.Special And Not PadOperators Then
-' Do nothing
+// Do nothing
 
 ElseIf nextTok.Type = Token.Special And Not PadOperators Then
-' Do nothing
+// Do nothing
 
 ElseIf tok.Value <> "(" Or PadParensInner Then
 AddSpace
 
 Else
-' Do nothing
+// Do nothing
 End If
 End If
 End If
@@ -871,9 +871,9 @@ End Class
 
 Const kVersionMagic = "$FormatCodeVersion$"
 
-'
-' Actual program to interact with Xojo IDE to tokenize and format code
-'
+//
+// Actual program to interact with Xojo IDE to tokenize and format code
+//
 
 Sub Main()
 //
@@ -904,8 +904,8 @@ End If
 
 Dim code As String
 
-' If the editor as text selected, assume the user wants to format only the
-' selected text. Otherwise, format the entire editor content
+// If the editor as text selected, assume the user wants to format only the
+// selected text. Otherwise, format the entire editor content
 
 If SelLength > 0 Then
 code = SelText
@@ -934,13 +934,13 @@ result = result + EndOfLine + "' (this output is here because DoDebug is set to 
 result = result + EndOfLine + EndOfLine + writer.DebugString
 End If
 
-'
-' Make sure something has changed before updating the text editor
-'
+//
+// Make sure something has changed before updating the text editor
+//
 If StrComp(result.Trim, code.Trim, 0) <> 0 Then
-' Save the cursor position (simple, doesn't always restore the position contextually)
-' as formatting could have changed enough to make your old cursor position no longer
-' the same as the new with the same index.
+// Save the cursor position (simple, doesn't always restore the position contextually)
+// as formatting could have changed enough to make your old cursor position no longer
+// the same as the new with the same index.
 Dim cursorPosition As Integer = SelStart
 
 If SelLength > 0 Then
@@ -950,7 +950,7 @@ Else
 Text = result
 End If
 
-' Restore the cursor position
+// Restore the cursor position
 SelStart = cursorPosition
 
 End If
