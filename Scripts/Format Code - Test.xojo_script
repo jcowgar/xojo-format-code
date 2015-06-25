@@ -211,8 +211,8 @@ end select
 // =================================================================
 
 Print "Warning" + EndOfLine + EndOfLine + _
-"Unit testing may take 30-90 seconds and during this time Xojo may" + _
-"seem unresponsive. Please let it run for a bit, and end result should" + _
+"Unit testing may take 30-90 seconds and during this time Xojo may " + _
+"seem unresponsive. Please let it run for a bit, and end result should " + _
 "appear in the text editor."
 
 Test("apples += 10", "apples = apples + 10")
