@@ -29,7 +29,7 @@
 // prior to calling Test.
 //
 
-Const kVersion = "2015r1"
+Const kVersion = "2015r2"
 Const kScriptName = "Format Code.xojo_script"
 Const preferencesModuleName = "FormatCodePreferences"
 Const kTitleCase = 1

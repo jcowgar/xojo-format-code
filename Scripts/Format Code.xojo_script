@@ -7,7 +7,7 @@
 //   * Kem Tekinay <ktekinay@mactechnologies.com>
 // 
 
-Const kVersion = "2015r1"
+Const kVersion = "2015r2"
 
 Const kTitleCase = 1
 Const kLowerCase = 2
