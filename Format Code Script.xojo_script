@@ -7,7 +7,7 @@
 '   * Kem Tekinay <ktekinay@mactechnologies.com>
 ' 
 
-Const kVersion = "2014r1"
+Const kVersion = "2015r1"
 
 Const kTitleCase = 1
 Const kLowerCase = 2
@@ -865,16 +865,42 @@ Return Trim(mResult)
 End Function
 End Class
 
+//
+// Magic communication between the Format Code script and the Unit Testing
+//
+
+Const kVersionMagic = "$FormatCodeVersion$"
+
 '
 ' Actual program to interact with Xojo IDE to tokenize and format code
 '
 
 Sub Main()
+//
+// Check for any "Magic" communication with the outside world, mainly the
+// unit testing script
+//
+
+select case Text
+case kVersionMagic
+Text = kVersion
+return
+
+end select
+
+//
+// Check for any unsupported settings
+//
+
 If AlignEqual And Not AlignAs Then
 Print "AlignEqual does not yet work without AlignAs also, please update your settings"
 
 Return
 End If
+
+//
+// Start the format process!
+//
 
 Dim code As String
 
