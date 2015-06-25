@@ -153,3 +153,21 @@ Keywords
 
 A user definable array lists all the keywords that you wish to have case conversion
 performed on. The array comes with all the keywords of the Xojo language already defined.
+
+KeywordsToTitleCase
+-------------------
+
+A user definable array defined in the `FormatCodePreferences` module delimited by commas.
+All items will be converted to `TitleCase` regardless of any case conversion setting.
+
+KeywordsToUpperCase
+-------------------
+
+A user definable array defined in the `FormatCodePreferences` module delimited by commas.
+All items will be converted to `UPPERCASE` regardless of any case conversion setting.
+
+KeywordsToLowerCase
+-------------------
+
+A user definable array defined in the `FormatCodePreferences` module delimited by commas.
+All items will be converted to `lowercase` regardless of any case conversion setting.
