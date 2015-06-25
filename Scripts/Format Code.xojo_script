@@ -54,7 +54,7 @@ KeywordsToCapitalize = Array("AddHandler", "AddressOf", "And", "Array", "As", "A
 "Exit", "Extends", "False", "Finally", "For", "Not", "Next", "Function", "GOTO", "GetTypeInfo", _
 "If", "Then", "In", "Is", "IsA", "Lib", "Loop", "Me", "New", "Nil", "Optional", "ParamArray", _
 "Raise", "RaiseEvent", "Redim", "Rem", "RemoveHandler", "Return", "Select", "Self", _
-"Soft", "Static", "Step", "Structure", "Sub", "Super", "Then", "To", "True", "Try", "Until", _
+"Soft", "Static", "Step", "Structure", "Sub", "Super", "Then", "To", "True", "Try", "Until", "Using", _
 "Wend", "While", "#If", "#ElseIf", "#EndIf", "#Pragma", "DebugBuild", "RBVersion", _
 "RBVersionString", "Target32Bit", "Target64Bit", "TargetBigEndian", "TargetCarbon", _
 "TargetCocoa", "TargetHasGUI", "TargetLinux", "TargetLittleEndian", _
@@ -100,7 +100,7 @@ Dim XojoKeywords() As String = Array("As", "Assigns", "Break", "ByRef", "ByVal",
 "Enum", "Exception", "Exit", "Extends", "False", "Finally", "For", "Not", "Next", "Function", _
 "GOTO", "If", "Then", "In", "Is", "IsA", "Lib", "Loop", "New", "Nil", "Optional", "ParamArray", _
 "Raise", "RaiseEvent", "Redim", "Rem", "Return", "Select", "Case", "Soft", "Static", "Step", _
-"Structure", "Sub", "Super", "Then", "To", "True", "Try", "Until", "Wend", "While", _
+"Structure", "Sub", "Super", "Then", "To", "True", "Try", "Until", "Using", "Wend", "While", _
 "#If", "#ElseIf", "#EndIf", "#Pragma", "DebugBuild", "RBVersion", "RBVersionString", _
 "Target32Bit", "Target64Bit", "TargetBigEndian", "TargetCarbon", _
 "TargetCocoa", "TargetHasGUI", "TargetLinux", "TargetLittleEndian", _
