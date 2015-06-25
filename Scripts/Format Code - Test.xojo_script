@@ -30,7 +30,7 @@
 '
 
 Const kVersion = "2015r1"
-Const kScriptName = "Format Code Script.xojo_script"
+Const kScriptName = "Format Code.xojo_script"
 Const preferencesModuleName = "FormatCodePreferences"
 Const kTitleCase = 1
 Const kLowerCase = 2
