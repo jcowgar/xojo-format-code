@@ -38,6 +38,9 @@ Copy `Scripts/Format Code.xojo_script` to the `Scripts` directory of your Xojo
 Installation. To run unit testing, simply open `Format Code Unit Test.xojo_project`
 and click the menu item *File > IDE Scripts > Format Code - Test.xojo_script*.
 
+Bleeding Edge Installation
+--------------------------
+
 If you are keeping up with the bleeding edge Format Code development via git, you may
 wish to clone the repository, then create symbolic links instead of copying the script
 each update. An example for OS X at the time of this writing:
@@ -45,6 +48,7 @@ each update. An example for OS X at the time of this writing:
     $ cd $HOME/development
     $ git clone https://github.com/jcowgar/xojo-format-code.git
     $ cd xojo-format-code
+    $ git checkout develop
     $ ln -s Format\ Code.xojo_script /Applications/Xojo\ 2015\ Release\ 2.2/Scripts/
 
 Now when a new commit is pushed or release made, simply:
@@ -53,6 +57,21 @@ Now when a new commit is pushed or release made, simply:
     $ git pull
 
 and you will be running the bleeding edge.
+
+Creating a Shortcut
+-------------------
+
+On OS X you can use the System Preferences to create a shortcut to execute the Format
+Code script.
+
+1. Load System Preferences
+2. Select *Keyboard*
+3. Select the *Shortcuts* tab
+4. Select *App Shortcuts*
+5. Click the *+* button
+6. Choose Application *Xojo*
+7. Enter *File->IDE Scripts->Format Code.xojo_script* into the Menu Title
+8. Choose a keyboard shortcut (I use Ctrl+F for Format)
 
 Options
 =======
