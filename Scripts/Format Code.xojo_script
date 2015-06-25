@@ -64,7 +64,7 @@ KeywordsToCapitalize = Array("AddHandler", "AddressOf", "And", "Array", "As", "A
 "StackOverflowChecking", "Unused", "Warning", "X86CallingConvention", "Boolean", _
 "CFStringRef", "CString", "Currency", "Delegate", "Double", "Int16", "Int32", "Int64", _
 "Int8", "Integer", "OSType", "PString", "Ptr", "Short", "Single", "String", _
-"Structure", "UInt16", "UInt32", "UInt64", "UInt8", "UShort", "WindowPtr", _
+"Structure", "Text", "UInt16", "UInt32", "UInt64", "UInt8", "UShort", "WindowPtr", _
 "WString", "XMLNodeType")
 
 // Set up additional arrays of keywords that should be treated in a special way.
