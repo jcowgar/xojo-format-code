@@ -29,10 +29,22 @@
 ' prior to calling Test.
 '
 
+Const kVersion = "2015r1"
+Const kScriptName = "Format Code Script.xojo_script"
 Const preferencesModuleName = "FormatCodePreferences"
 Const kTitleCase = 1
 Const kLowerCase = 2
 Const kUpperCase = 3
+
+//
+// Magic communication between the Format Code script and the Unit Testing
+//
+
+Const kVersionMagic = "$FormatCodeVersion$"
+
+//
+// Test Statistics and Results
+//
 
 Dim testIndex, passCount, failCount As Integer
 Dim results() As String
@@ -111,7 +123,7 @@ testIndex = testIndex + 1
 expected = ReplaceLineEndings(expected, EndOfLine)
 
 Text = bad
-RunScript "Format Code Script.xojo_script"
+RunScript kScriptName
 actualWithDebug = ReplaceLineEndings(Text, EndOfLine)
 
 ' Remove the debug info 
@@ -148,28 +160,60 @@ DoCommand "NewMethod"
 
 DoDebug = True
 
-'
-' Initial test to make sure the script is installed
-'
+//
+// Make sure our script is installed, can be ran and is the version
+// matched for this unit test
+//
 
-Test("if", "If")
-If passCount <> 1 Then
-Dim msg As String = _
-"The Format Code Script may not be installed, or something else has gone wrong. " + _
-"Consult the project README file for installation information."
-Text = "//" + EndOfLine + "// " + msg + EndOfLine + "//"
-print msg
-Return
-Else
-passCount = 0
-testIndex = 0
-End If
+DoDebug = False
+Text = kVersionMagic
+RunScript kScriptName
+DoDebug = True
+
+select case Text
+case kVersion
+// All is well
+
+case kVersionMagic
+// We couldn't run the script, or the script is older than 2015r1 when
+// the kVersionMagic was implemented
+
+Text = _
+"//" + EndOfLine + _
+"// Format Code may not be installed or is older than this unit test script" + EndOfLine + _
+"//" + EndOfLine + _
+"// Please see the README.md file for installation information." + EndOfLine + _
+"//"
+
+return
+
+case else
+// Version numbers do not match
+
+Text = _
+"//" + EndOfLine + _
+"// Format Code and Unit Test version mismatch." + EndOfLine + _
+"//" + EndOfLine + _
+"// Format Code Version = " + Text + EndOfLine + _
+"// Unit Test Version = " + kVersion + EndOfLine + _
+"//" + EndOfLine + _
+"// Please see README.md for installation instructions, please update" + EndOfLine + _
+"// both Format Code and Unit Test scripts" + EndOfLine + _
+"//"
+
+return
+end select
 
 ' =================================================================
 ' =
 ' =                         TESTS
 ' =
 ' =================================================================
+
+Print "Warning" + EndOfLine + EndOfLine + _
+"Unit testing may take 30-90 seconds and during this time Xojo may" + _
+"seem unresponsive. Please let it run for a bit, and end result should" + _
+"appear in the text editor."
 
 Test("apples += 10", "apples = apples + 10")
 Test("apples -= 10", "apples = apples - 10")
