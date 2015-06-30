@@ -6,6 +6,9 @@ Inherits Application
 		#Tag Instance, Platform = Linux, Language = Default, Definition  = \"&Delete"
 	#tag EndConstant
 
+	#tag Constant, Name = kFCTestProjectIdentifier, Type = String, Dynamic = False, Default = \"This is the Fomat Code test project", Scope = Public
+	#tag EndConstant
+
 	#tag Constant, Name = kFileQuit, Type = String, Dynamic = False, Default = \"&Quit", Scope = Public
 		#Tag Instance, Platform = Windows, Language = Default, Definition  = \"E&xit"
 	#tag EndConstant
