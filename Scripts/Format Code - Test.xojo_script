@@ -31,7 +31,7 @@
 
 Const kVersion = "2015r1"
 Const kScriptName = "Format Code.xojo_script"
-Const preferencesModuleName = "FormatCodePreferences"
+Const kPreferencesModuleName= "FormatCodePreferences"
 Const kTitleCase = 1
 Const kLowerCase = 2
 Const kUpperCase = 3
@@ -54,51 +54,51 @@ Dim results() As String
 //
 
 Sub CaseConversion(Assigns value As Integer)
-ConstantValue(preferencesModuleName + ".CaseConversion") = Str(value)
+ConstantValue(kPreferencesModuleName+ ".CaseConversion") = Str(value)
 End Sub
 
 Sub PadParensInner(Assigns value As Boolean)
-ConstantValue(preferencesModuleName + ".PadParensInner") = If(value, "Yes", "No")
+ConstantValue(kPreferencesModuleName+ ".PadParensInner") = If(value, "Yes", "No")
 End Sub
 
 Sub PadParensOuter(Assigns value As Boolean)
-ConstantValue(preferencesModuleName + ".PadParensOuter") = If(value, "Yes", "No")
+ConstantValue(kPreferencesModuleName+ ".PadParensOuter") = If(value, "Yes", "No")
 End Sub
 
 Sub PadOperators(Assigns value As Boolean)
-ConstantValue(preferencesModuleName + ".PadOperators") = If(value, "Yes", "No")
+ConstantValue(kPreferencesModuleName+ ".PadOperators") = If(value, "Yes", "No")
 End Sub
 
 Sub PadComma(Assigns value As Boolean)
-ConstantValue(preferencesModuleName + ".PadComma") = If(value, "Yes", "No")
+ConstantValue(kPreferencesModuleName+ ".PadComma") = If(value, "Yes", "No")
 End Sub
 
 Sub KeywordsToTitleCase(Assigns value As String)
-ConstantValue(preferencesModuleName + ".KeywordsToTitleCase") = value
+ConstantValue(kPreferencesModuleName+ ".KeywordsToTitleCase") = value
 End Sub
 
 Sub KeywordsToUpperCase(Assigns value As String)
-ConstantValue(preferencesModuleName + ".KeywordsToUpperCase") = value
+ConstantValue(kPreferencesModuleName+ ".KeywordsToUpperCase") = value
 End Sub
 
 Sub KeywordsToLowerCase(Assigns value As String)
-ConstantValue(preferencesModuleName + ".KeywordsToLowerCase") = value
+ConstantValue(kPreferencesModuleName+ ".KeywordsToLowerCase") = value
 End Sub
 
 Sub AdditionalKeywords(Assigns value As String)
-ConstantValue(preferencesModuleName + ".AdditionalKeywords") = value
+ConstantValue(kPreferencesModuleName+ ".AdditionalKeywords") = value
 End Sub
 
 Sub AlignAs(Assigns value As Boolean)
-ConstantValue(preferencesModuleName + ".AlignAs") = If(value, "Yes", "No")
+ConstantValue(kPreferencesModuleName+ ".AlignAs") = If(value, "Yes", "No")
 End Sub
 
 Sub AlignEqual(Assigns value As Boolean)
-ConstantValue(preferencesModuleName + ".AlignEqual") = If(value, "Yes", "No")
+ConstantValue(kPreferencesModuleName+ ".AlignEqual") = If(value, "Yes", "No")
 End Sub
 
 Sub DoDebug(Assigns value As Boolean)
-ConstantValue(preferencesModuleName + ".DoDebug") = If(value, "Yes", "No")
+ConstantValue(kPreferencesModuleName+ ".DoDebug") = If(value, "Yes", "No")
 End Sub
 
 Function ReplaceLineEndings(sourceString As String, lineEnding As String) As String
