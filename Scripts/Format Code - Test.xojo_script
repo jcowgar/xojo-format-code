@@ -37,6 +37,17 @@ Const kLowerCase = 2
 Const kUpperCase = 3
 
 //
+// Ensure that the test project is the frontmost project
+//
+Const kTestProjectIdentifier = "App.kFCTestProjectIdentifier"
+Const kTestProjectIdentifierValue = "This is the Fomat Code test project"
+
+If ConstantValue(kTestProjectIdentifier) <> kTestProjectIdentifierValue Then
+Print "The test project if not open or is not in front. Please do that before running this test script."
+Return
+End If
+
+//
 // Magic communication between the Format Code script and the Unit Testing
 //
 
